@@ -1,0 +1,8 @@
+[project]
+requires-python=">=3.9"
+name="manygit"
+
+
+[project.optional_dependencies]
+github = ["github3.py"]
+gitlab = ["python-gitlab"]
