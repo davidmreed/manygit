@@ -10,7 +10,6 @@ from .types import (
     Tag,
     Release,
     CommitStatus,
-    Commit,
     PullRequest,
     Repository,
     connection
@@ -34,6 +33,9 @@ class GitLabCommitStatus(CommitStatus):
     __slots__ = ['commit_status']
 
     commit_status: gitlab.v4.objects.ProjectCommitStatus
+
+    def __init__(self, commit_status: gitlab.v4.objects.ProjectCommitStatus):
+        self.commit_status = commit_status
     
     @property
     def name(self) -> str:
@@ -239,7 +241,7 @@ class GitLabConnection(Connection):
     def get_repo(self, repo: str) -> GitLabRepository:
         return GitLabRepository(self.conn.projects.get(repo))
 
-    def is_eligible_repo(self, repo: str) -> T.Tuple[bool, str]:
+    def is_eligible_repo(self, repo: str) -> T.Tuple[bool, T.Optional[str]]:
         # GitLab URL patterns
         # https://gitlab.com/davidmreed/amaxa
         # git@gitlab.com:davidmreed/amaxa.git

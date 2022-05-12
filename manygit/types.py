@@ -1,13 +1,12 @@
 import abc
 import typing as T
-import enum
-import pydantic
 from collections import defaultdict
 
 try:
     import manygit.gitlab
 except ImportError:
     pass
+
 try:
     import manygit.github
 except ImportError:
@@ -19,73 +18,89 @@ class ManygitException(Exception):
 
 class CommitStatus(abc.ABC):
     @property
+    @abc.abstractmethod
     def name(self) -> str:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def status(self) -> str:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def data(self) -> str:
-        pass
+        ...
 
 
 class Commit(abc.ABC):
     @property
+    @abc.abstractmethod
     def sha(self) -> str:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def statuses(self) -> T.Iterable[CommitStatus]:
-        pass
+        ...
 
+    @abc.abstractmethod
     def download(self):
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def parents(self) -> T.Iterable["Commit"]:
-        pass
+        ...
 
 
 class Branch(abc.ABC):
     @property
+    @abc.abstractmethod
     def name(self) -> str:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def head(self) -> Commit:
-        pass
+        ...
 
 
 class Tag(abc.ABC):
     @property
+    @abc.abstractmethod
     def name(self) -> str:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def commit(self) -> Commit:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def annotation(self) -> str:
-        pass
+        ...
 
 
 class Release(abc.ABC):
     @property
+    @abc.abstractmethod
     def tag(self) -> Tag:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def name(self) -> str:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def body(self) -> str:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def commit(self) -> Commit:
         return self.tag.commit
 
@@ -101,72 +116,90 @@ class Release(abc.ABC):
 
 class PullRequest(abc.ABC):
     @property
+    @abc.abstractmethod
     def base(self) -> Branch:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def source(self) -> Branch:
-        pass
+        ...
 
 
 class Repository(abc.ABC):
     __slots__ = []
 
     @property
+    @abc.abstractmethod
     def commits(self) -> T.Iterable[Commit]:
-        pass
+        ...
 
+    @abc.abstractmethod
     def get_commit(self, sha: str) -> Commit:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def branches(self) -> T.Iterable[Branch]:
-        pass
+        ...
 
+    @abc.abstractmethod
     def get_branch(self, name: str) -> Branch:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def default_branch(self) -> Branch:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def tags(self) -> T.Iterable[Tag]:
-        pass
+        ...
 
+    @abc.abstractmethod
     def get_tag(self, name: str) -> Tag:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def releases(self) -> T.Iterable[Release]:
-        pass
+        ...
 
+    @abc.abstractmethod
     def get_release(self, name: str) -> Release:
-        pass
+        ...
 
     @property
+    @abc.abstractmethod
     def pull_requests(self) -> T.Iterable[PullRequest]:
-        pass
+        ...
 
 
 class Connection(abc.ABC):
-    def is_eligible_repo(self, repo: str) -> T.Tuple[bool, str]:
-        pass
+    @abc.abstractmethod
+    def __init__(self, conn: T.Any):
+        ...
 
+    @abc.abstractmethod
+    def is_eligible_repo(self, repo: str) -> T.Tuple[bool, T.Optional[str]]:
+        ...
+
+    @abc.abstractmethod
     def get_repo(self, repo: str) -> Repository:
-        pass
+        ...
 
 
 class RepositoryException(Exception):
     pass
 
 
-connection_classes = {}
-available_hosts = defaultdict(list)
+connection_classes: dict[T.Type[T.Any], T.Type[Connection]] = {}
+available_hosts: T.DefaultDict[str,list[T.Type[T.Any]]] = defaultdict(list)
 
 
-def connection(*, host: str, auth_classes: list[T.Type]):
-    def _connection(klass: T.Type):
+def connection(*, host: str, auth_classes: list[T.Type[T.Any]]):
+    def _connection(klass: T.Type[Connection]):
         for c in auth_classes:
             connection_classes[c] = klass
 
@@ -196,7 +229,7 @@ class ConnectionManager:
         else:
             raise ManygitException(f"{conn} is not an instance of a Git host authentication class")
 
-    def get_repo(self, repo: str, host_hint: T.Optional[GitHost] = None) -> Repository:
+    def get_repo(self, repo: str, host_hint: T.Optional[str] = None) -> Repository:
         """Given a string and an optional hint as to the host service,
         attempt to create a Repository instance."""
 

@@ -7,7 +7,6 @@ from .types import (
     Tag,
     Release,
     CommitStatus,
-    Commit,
     Repository,
     connection
 )
@@ -35,7 +34,7 @@ GitHubAuth = T.Union[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth]
 class GitHubCommitStatus(CommitStatus):
     __slots__ = ["commit_status"]
 
-    status: github3.repos.status.Status
+    commit_status: github3.repos.status.Status
 
     def __init__(self, commit_status: github3.repos.status.Status):
         self.commit_status = commit_status
@@ -180,7 +179,7 @@ class GitHubRepository(Repository):
         raise NotImplementedError
 
     def get_commit(self, sha: str) -> GitHubCommit:
-        raise NotImplementedError
+        return GitHubCommit(self.repo.commit(sha), self)
 
     @property
     def branches(self) -> T.Iterable[GitHubBranch]:
@@ -212,9 +211,9 @@ class GitHubRepository(Repository):
         # TODO: github3 returns None for not found
         return GitHubRelease(self.repo.release_from_tag(tag_name))
 
-    def get_commit(self, sha: str) -> GitHubCommit:
-        return GitHubCommit(self.repo.commit(sha), self)
-
+    @property
+    def pull_requests(self) -> T.Iterable[GitHubPullRequest]:
+        pass
 
 
 @connection(host=GITHUB_HOST, auth_classes=[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth])
@@ -241,7 +240,7 @@ class GitHubConnection(Connection):
     def get_repo(self, repo: str) -> GitHubRepository:
         return GitHubRepository(self.conn.repository(*repo.split("/")))
 
-    def is_eligible_repo(self, repo: str) -> T.Tuple[bool, str]:
+    def is_eligible_repo(self, repo: str) -> T.Tuple[bool, T.Optional[str]]:
         # GitHub URL patterns
         # GitHub Enterprise URLs are the same, but replace `github.com` with the enterprise URL
         # https://github.com/davidmreed/amaxa.git
