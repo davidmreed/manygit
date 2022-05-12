@@ -1,7 +1,7 @@
 import abc
+import enum
 import typing as T
 from collections import defaultdict
-import enum
 
 
 class ManygitException(Exception):
@@ -116,10 +116,9 @@ class Release(abc.ABC):
         return False
 
 
-
 class PullRequest(abc.ABC):
     # TODO: name, user, status, identifier
-    
+
     @property
     @abc.abstractmethod
     def base(self) -> Branch:
@@ -200,7 +199,7 @@ class RepositoryException(Exception):
 
 
 connection_classes: dict[T.Type[T.Any], T.Type[Connection]] = {}
-available_hosts: T.DefaultDict[str,list[T.Type[T.Any]]] = defaultdict(list)
+available_hosts: T.DefaultDict[str, list[T.Type[T.Any]]] = defaultdict(list)
 
 
 def connection(*, host: str, auth_classes: list[T.Type[T.Any]]):
@@ -209,7 +208,7 @@ def connection(*, host: str, auth_classes: list[T.Type[T.Any]]):
             connection_classes[c] = klass
 
         available_hosts[host].extend(auth_classes)
-    
+
     return _connection
 
 
@@ -232,7 +231,9 @@ class ConnectionManager:
             connection_class = connection_classes[type(conn)]
             self.connections.append(connection_class(conn))
         else:
-            raise ManygitException(f"{conn} is not an instance of a Git host authentication class")
+            raise ManygitException(
+                f"{conn} is not an instance of a Git host authentication class"
+            )
 
     def get_repo(self, repo: str, host_hint: T.Optional[str] = None) -> Repository:
         """Given a string and an optional hint as to the host service,

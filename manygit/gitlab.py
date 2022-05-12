@@ -1,29 +1,30 @@
-from dataclasses import dataclass
 import typing as T
+from dataclasses import dataclass
 
 import gitlab.v4.objects
 
 from .types import (
-    Connection,
     Branch,
     Commit,
-    Tag,
-    Release,
     CommitStatus,
     CommitStatusEnum,
+    Connection,
+    ManygitException,
     PullRequest,
+    Release,
     Repository,
+    Tag,
     connection,
-    ManygitException
 )
 
-
 GITLAB_HOST = "GITLAB"
+
 
 @dataclass
 class GitLabOAuthTokenAuth:
     oauth_token: str
     enterprise_url: T.Optional[str] = None
+
 
 @dataclass
 class GitLabPersonalAccessTokenAuth:
@@ -32,13 +33,13 @@ class GitLabPersonalAccessTokenAuth:
 
 
 class GitLabCommitStatus(CommitStatus):
-    __slots__ = ['commit_status']
+    __slots__ = ["commit_status"]
 
     commit_status: gitlab.v4.objects.ProjectCommitStatus
 
     def __init__(self, commit_status: gitlab.v4.objects.ProjectCommitStatus):
         self.commit_status = commit_status
-    
+
     @property
     def name(self) -> str:
         return self.commit_status.name
@@ -56,7 +57,6 @@ class GitLabCommitStatus(CommitStatus):
 
         raise ManygitException(f"Invalid commit status value {str}")
 
-
     @property
     def data(self) -> T.Optional[str]:
         return None
@@ -67,7 +67,7 @@ class GitLabCommitStatus(CommitStatus):
 
 
 class GitLabCommit(Commit):
-    __slots__ = ['commit']
+    __slots__ = ["commit"]
 
     commit: gitlab.v4.objects.ProjectCommitStatus
 
@@ -95,9 +95,11 @@ class GitLabCommit(Commit):
 class GitLabBranch(Branch):
     __slots__ = ["branch", "repo"]
     branch: gitlab.v4.objects.ProjectBranch
-    repo: 'GitLabRepository'
+    repo: "GitLabRepository"
 
-    def __init__(self, branch: gitlab.v4.objects.ProjectBranch, repo: 'GitLabRepository'):
+    def __init__(
+        self, branch: gitlab.v4.objects.ProjectBranch, repo: "GitLabRepository"
+    ):
         self.branch = branch
         self.repo = repo
 
@@ -107,16 +109,18 @@ class GitLabBranch(Branch):
 
     @property
     def head(self) -> GitLabCommit:
-        return self.repo.get_commit(self.branch.commit['id'])
+        return self.repo.get_commit(self.branch.commit["id"])
 
 
 class GitLabTag(Tag):
     __slots__ = ["tag", "repo"]
 
     tag: gitlab.v4.objects.tags.ProjectTag
-    repo: 'GitLabRepository'
+    repo: "GitLabRepository"
 
-    def __init__(self, tag: gitlab.v4.objects.tags.ProjectTag, repo: 'GitLabRepository'):
+    def __init__(
+        self, tag: gitlab.v4.objects.tags.ProjectTag, repo: "GitLabRepository"
+    ):
         self.tag = tag
         self.repo = repo
 
@@ -134,12 +138,14 @@ class GitLabTag(Tag):
 
 
 class GitLabRelease(Release):
-    __slots__ = ['repo', 'release']
+    __slots__ = ["repo", "release"]
 
-    repo: 'GitLabRepository'
+    repo: "GitLabRepository"
     release: gitlab.v4.objects.ProjectRelease
 
-    def __init__(self, release: gitlab.v4.objects.ProjectRelease, repo: 'GitLabRepository'):
+    def __init__(
+        self, release: gitlab.v4.objects.ProjectRelease, repo: "GitLabRepository"
+    ):
         self.repo = repo
         self.release = release
 
@@ -157,16 +163,17 @@ class GitLabRelease(Release):
 
     @property
     def commit(self) -> GitLabCommit:
-        return self.repo.get_commit(self.release.commit['id'])
-
+        return self.repo.get_commit(self.release.commit["id"])
 
 
 class GitLabPullRequest(PullRequest):
     pr: gitlab.v4.objects.ProjectMergeRequest
-    repo: 'GitLabRepository'
+    repo: "GitLabRepository"
 
-    def __init__(self, pr: gitlab.v4.objects.ProjectMergeRequest, repo: 'GitLabRepository'):
-        self.pr = pr 
+    def __init__(
+        self, pr: gitlab.v4.objects.ProjectMergeRequest, repo: "GitLabRepository"
+    ):
+        self.pr = pr
         self.repo = repo
 
     @property
@@ -231,7 +238,9 @@ class GitLabRepository(Repository):
 GitLabAuth = T.Union[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth]
 
 
-@connection(host=GITLAB_HOST, auth_classes=[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth])
+@connection(
+    host=GITLAB_HOST, auth_classes=[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth]
+)
 class GitLabConnection(Connection):
     __slots__ = []
 

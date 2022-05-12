@@ -1,17 +1,19 @@
 import os
 
+import pytest
+
 from manygit.gitlab import GitLabPersonalAccessTokenAuth
 from manygit.types import ConnectionManager, Repository
-
-import pytest
 
 main_commit = "b0a6a46bcd70bf305d59ea86431affc1db6c27ac"
 
 branch_commit = "41d680e26e1a9dbe662c936716076cee72941215"
 
+
 @pytest.fixture
 def personal_access_token() -> str:
-    return os.environ['GITLAB_ACCESS_TOKEN']
+    return os.environ["GITLAB_ACCESS_TOKEN"]
+
 
 @pytest.fixture
 def conn(personal_access_token: str) -> ConnectionManager:
@@ -24,30 +26,33 @@ def conn(personal_access_token: str) -> ConnectionManager:
 
     return cm
 
+
 @pytest.fixture
 def repo(conn: ConnectionManager) -> Repository:
     return conn.get_repo("https://gitlab.com/davidmreed/manygit-test")
 
 
 def test_branches(repo: Repository):
-    assert set(branch.name for branch in repo.branches) == set([
-        "main", "feature/add-file"
-    ])
+    assert set(branch.name for branch in repo.branches) == set(
+        ["main", "feature/add-file"]
+    )
 
     branch = repo.get_branch("feature/add-file")
     assert branch
     assert branch.head.sha == branch_commit
     assert repo.default_branch.name == "main"
 
+
 def test_commits(repo: Repository):
     commit = repo.get_commit(branch_commit)
     assert commit.sha == branch_commit
     assert list(parent.sha for parent in commit.parents) == [main_commit]
 
+
 def test_commit_statuses(repo: Repository):
     commit = repo.get_commit(main_commit)
     assert set(status.name for status in commit.statuses) == set(["foo", "bar"])
-    
+
     for cs in commit.statuses:
         if cs.name == "foo":
             assert cs.name == "foo"
@@ -66,17 +71,19 @@ def test_tags(repo: Repository):
     tag = repo.get_tag("test")
     assert tag
     assert tag.commit.sha == main_commit
-    assert tag.name == 'test'
-    assert tag.annotation.strip() == 'This is the tag message.'
+    assert tag.name == "test"
+    assert tag.annotation.strip() == "This is the tag message."
+
 
 def test_releases(repo: Repository):
     assert len(list(repo.releases)) == 1
     release = next(repo.releases)
     assert release
-    assert release.tag.name == 'test'
-    assert release.name == 'test'
+    assert release.tag.name == "test"
+    assert release.name == "test"
     assert release.body.strip() == "Here are the release notes."
     assert release.commit.sha == main_commit
+
 
 def test_pull_requests(repo: Repository):
     assert len(list(repo.pull_requests)) == 1

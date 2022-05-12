@@ -1,22 +1,21 @@
+import typing as T
 from dataclasses import dataclass
 
 import github3
 
 from .types import (
-    Connection,
     Branch,
     Commit,
-    Tag,
-    Release,
-    PullRequest,
     CommitStatus,
     CommitStatusEnum,
+    Connection,
+    ManygitException,
+    PullRequest,
+    Release,
     Repository,
+    Tag,
     connection,
-    ManygitException
 )
-import typing as T
-
 
 GITHUB_HOST = "GITHUB"
 
@@ -62,7 +61,6 @@ class GitHubCommitStatus(CommitStatus):
 
         raise ManygitException(f"Invalid commit status value {str}")
 
-
     @property
     def data(self) -> str:
         return self.commit_status.description
@@ -70,6 +68,7 @@ class GitHubCommitStatus(CommitStatus):
     @property
     def url(self) -> T.Optional[str]:
         return self.commit_status.target_url
+
 
 GitHub3Commit = T.Union[
     github3.repos.commit.ShortCommit, github3.repos.commit.RepoCommit
@@ -80,9 +79,9 @@ class GitHubCommit(Commit):
     __slots__ = ["commit"]
 
     commit: GitHub3Commit
-    repo: 'GitHubRepository'
+    repo: "GitHubRepository"
 
-    def __init__(self, commit: GitHub3Commit, repo: 'GitHubRepository'):
+    def __init__(self, commit: GitHub3Commit, repo: "GitHubRepository"):
         self.commit = commit
         self.repo = repo
 
@@ -100,16 +99,18 @@ class GitHubCommit(Commit):
 
     @property
     def parents(self) -> T.Iterable[Commit]:
-        return [self.repo.get_commit(c['sha']) for c in self.commit.parents]
+        return [self.repo.get_commit(c["sha"]) for c in self.commit.parents]
 
 
 class GitHubBranch(Branch):
     __slots__ = ["branch", "repo"]
 
     branch: github3.repos.branch.ShortBranch
-    repo: 'GitHubRepository'
-    
-    def __init__(self, branch: github3.repos.branch.ShortBranch, repo: 'GitHubRepository'):
+    repo: "GitHubRepository"
+
+    def __init__(
+        self, branch: github3.repos.branch.ShortBranch, repo: "GitHubRepository"
+    ):
         self.branch = branch
         self.repo = repo
 
@@ -128,9 +129,9 @@ class GitHubTag(Tag):
     __slots__ = ["tag"]
 
     tag: github3.repos.tag.RepoTag
-    repo: 'GitHubRepository'
+    repo: "GitHubRepository"
 
-    def __init__(self, tag: github3.repos.tag.RepoTag, repo: 'GitHubRepository'):
+    def __init__(self, tag: github3.repos.tag.RepoTag, repo: "GitHubRepository"):
         self.tag = tag
         self.repo = repo
 
@@ -151,9 +152,11 @@ class GitHubRelease(Release):
     __slots__ = ["release"]
 
     release: github3.repos.release.Release
-    repo: 'GitHubRepository'
+    repo: "GitHubRepository"
 
-    def __init__(self, release: github3.repos.release.Release, repo: 'GitHubRepository'):
+    def __init__(
+        self, release: github3.repos.release.Release, repo: "GitHubRepository"
+    ):
         self.release = release
         self.repo = repo
 
@@ -185,9 +188,11 @@ class GitHubRelease(Release):
 class GitHubPullRequest(PullRequest):
 
     pull_request: github3.pulls.ShortPullRequest
-    repo: 'GitHubRepository'
+    repo: "GitHubRepository"
 
-    def __init__(self, pull_request: github3.pulls.ShortPullRequest, repo: 'GitHubRepository'):
+    def __init__(
+        self, pull_request: github3.pulls.ShortPullRequest, repo: "GitHubRepository"
+    ):
         self.pull_request = pull_request
         self.repo = repo
 
@@ -198,7 +203,6 @@ class GitHubPullRequest(PullRequest):
     @property
     def source(self) -> Branch:
         return self.repo.get_branch(self.pull_request.head.ref)
-
 
 
 class GitHubRepository(Repository):
@@ -251,7 +255,9 @@ class GitHubRepository(Repository):
             yield GitHubPullRequest(pr, self)
 
 
-@connection(host=GITHUB_HOST, auth_classes=[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth])
+@connection(
+    host=GITHUB_HOST, auth_classes=[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth]
+)
 class GitHubConnection(Connection):
     __slots__ = []
 
