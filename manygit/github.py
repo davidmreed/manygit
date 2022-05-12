@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import github3
 
 from .types import (
@@ -12,20 +14,21 @@ from .types import (
 )
 import typing as T
 
-import pydantic
 
 GITHUB_HOST = "GITHUB"
 
 
-class GitHubOAuthTokenAuth(pydantic.BaseModel):
+@dataclass
+class GitHubOAuthTokenAuth:
     oauth_token: str
-    enterprise_url: T.Optional[str]
+    enterprise_url: T.Optional[str] = None
 
 
-class GitHubPersonalAccessTokenAuth(pydantic.BaseModel):
+@dataclass
+class GitHubPersonalAccessTokenAuth:
     username: str
     personal_access_token: str
-    enterprise_url: T.Optional[str]
+    enterprise_url: T.Optional[str] = None
 
 
 GitHubAuth = T.Union[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth]
@@ -218,9 +221,10 @@ class GitHubRepository(Repository):
 
 @connection(host=GITHUB_HOST, auth_classes=[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth])
 class GitHubConnection(Connection):
+    __slots__ = []
 
     conn: T.Union[github3.github.GitHubEnterprise, github3.github.GitHub]
-    enterprise_url: T.Optional[str]
+    enterprise_url: T.Optional[str] = None
 
     def __init__(
         self, auth: T.Union[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth]

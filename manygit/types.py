@@ -29,7 +29,12 @@ class CommitStatus(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def data(self) -> str:
+    def data(self) -> T.Optional[str]:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def url(self) -> T.Optional[str]:
         ...
 
 

@@ -1,7 +1,7 @@
-import gitlab.v4.objects
-
+from dataclasses import dataclass
 import typing as T
 
+import gitlab.v4.objects
 
 from .types import (
     Connection,
@@ -15,18 +15,18 @@ from .types import (
     connection
 )
 
-import pydantic
 
 GITLAB_HOST = "GITLAB"
 
-class GitLabOAuthTokenAuth(pydantic.BaseModel):
+@dataclass
+class GitLabOAuthTokenAuth:
     oauth_token: str
-    enterprise_url: T.Optional[str]
+    enterprise_url: T.Optional[str] = None
 
-
-class GitLabPersonalAccessTokenAuth(pydantic.BaseModel):
+@dataclass
+class GitLabPersonalAccessTokenAuth:
     personal_access_token: str
-    enterprise_url: T.Optional[str]
+    enterprise_url: T.Optional[str] = None
 
 
 class GitLabCommitStatus(CommitStatus):
@@ -39,15 +39,19 @@ class GitLabCommitStatus(CommitStatus):
     
     @property
     def name(self) -> str:
-        pass
+        return self.commit_status.name
 
     @property
     def status(self) -> str:
-        pass
+        return self.commit_status.status
 
     @property
-    def data(self) -> str:
-        pass
+    def data(self) -> T.Optional[str]:
+        return None
+
+    @property
+    def url(self) -> T.Optional[str]:
+        return self.commit_status.target_url
 
 
 class GitLabCommit(Commit):
@@ -217,7 +221,7 @@ GitLabAuth = T.Union[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth]
 
 @connection(host=GITLAB_HOST, auth_classes=[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth])
 class GitLabConnection(Connection):
-    __slots__ = ['conn', 'enterprise_url']
+    __slots__ = []
 
     conn: gitlab.Gitlab
     enterprise_url: T.Optional[str]
