@@ -1,23 +1,24 @@
 import os
 
-from manygit.gitlab import GitLabPersonalAccessTokenAuth
-from manygit.types import ConnectionManager, Repository
+from manygit.github import GitHubPersonalAccessTokenAuth
+from manygit.types import ConnectionManager, Repository, CommitStatusEnum
 
 import pytest
 
-main_commit = "b0a6a46bcd70bf305d59ea86431affc1db6c27ac"
+main_commit = "0ab718932f224846be22c284cd4fd8f667b35c7b"
 
-branch_commit = "41d680e26e1a9dbe662c936716076cee72941215"
+branch_commit = "fa01244214a7e645a837ade228eaff17df6d7e62"
 
 @pytest.fixture
 def personal_access_token() -> str:
-    return os.environ['GITLAB_ACCESS_TOKEN']
+    return os.environ['GITHUB_ACCESS_TOKEN']
 
 @pytest.fixture
 def conn(personal_access_token: str) -> ConnectionManager:
     cm = ConnectionManager()
     cm.add_connection(
-        GitLabPersonalAccessTokenAuth(
+        GitHubPersonalAccessTokenAuth(
+            username="davidmreed",
             personal_access_token=personal_access_token,
         )
     )
@@ -26,7 +27,7 @@ def conn(personal_access_token: str) -> ConnectionManager:
 
 @pytest.fixture
 def repo(conn: ConnectionManager) -> Repository:
-    return conn.get_repo("https://gitlab.com/davidmreed/manygit-test")
+    return conn.get_repo("https://github.com/davidmreed/manygit-test")
 
 
 def test_branches(repo: Repository):
@@ -51,12 +52,12 @@ def test_commit_statuses(repo: Repository):
     for cs in commit.statuses:
         if cs.name == "foo":
             assert cs.name == "foo"
-            assert cs.status == "success"
+            assert cs.status is CommitStatusEnum.SUCCESS
             assert cs.data is None
             assert cs.url is None
         else:
             assert cs.name == "bar"
-            assert cs.status == "failed"
+            assert cs.status is CommitStatusEnum.FAILED
             assert cs.data is None
             assert cs.url == "https://ktema.org"
 

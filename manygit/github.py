@@ -8,9 +8,12 @@ from .types import (
     Commit,
     Tag,
     Release,
+    PullRequest,
     CommitStatus,
+    CommitStatusEnum,
     Repository,
-    connection
+    connection,
+    ManygitException
 )
 import typing as T
 
@@ -47,13 +50,26 @@ class GitHubCommitStatus(CommitStatus):
         return self.commit_status.context
 
     @property
-    def status(self) -> str:
-        return self.commit_status.state
+    def status(self) -> CommitStatusEnum:
+        status = self.commit_status.state
+
+        if status == "pending":
+            return CommitStatusEnum.PENDING
+        elif status in ["failure", "error"]:
+            return CommitStatusEnum.FAILED
+        elif status == "success":
+            return CommitStatusEnum.SUCCESS
+
+        raise ManygitException(f"Invalid commit status value {str}")
+
 
     @property
     def data(self) -> str:
         return self.commit_status.description
 
+    @property
+    def url(self) -> T.Optional[str]:
+        return self.commit_status.target_url
 
 GitHub3Commit = T.Union[
     github3.repos.commit.ShortCommit, github3.repos.commit.RepoCommit
@@ -64,9 +80,11 @@ class GitHubCommit(Commit):
     __slots__ = ["commit"]
 
     commit: GitHub3Commit
+    repo: 'GitHubRepository'
 
-    def __init__(self, commit: GitHub3Commit):
+    def __init__(self, commit: GitHub3Commit, repo: 'GitHubRepository'):
         self.commit = commit
+        self.repo = repo
 
     @property
     def sha(self) -> str:
@@ -82,16 +100,18 @@ class GitHubCommit(Commit):
 
     @property
     def parents(self) -> T.Iterable[Commit]:
-        return [GitHubCommit(c) for c in self.commit.parents]
+        return [self.repo.get_commit(c['sha']) for c in self.commit.parents]
 
 
 class GitHubBranch(Branch):
-    __slots__ = ["branch"]
+    __slots__ = ["branch", "repo"]
 
     branch: github3.repos.branch.ShortBranch
-
-    def __init__(self, branch: github3.repos.branch.ShortBranch):
+    repo: 'GitHubRepository'
+    
+    def __init__(self, branch: github3.repos.branch.ShortBranch, repo: 'GitHubRepository'):
         self.branch = branch
+        self.repo = repo
 
     @property
     def name(self) -> str:
@@ -101,24 +121,26 @@ class GitHubBranch(Branch):
     def head(self) -> Commit:
         # `self.branch.commit` is a MiniCommit, which we refresh
         # into a RepoCommit.
-        return GitHubCommit(self.branch.commit.refresh())
+        return GitHubCommit(self.branch.commit.refresh(), self.repo)
 
 
 class GitHubTag(Tag):
     __slots__ = ["tag"]
 
     tag: github3.repos.tag.RepoTag
+    repo: 'GitHubRepository'
 
-    def __init__(self, tag: github3.repos.tag.RepoTag):
+    def __init__(self, tag: github3.repos.tag.RepoTag, repo: 'GitHubRepository'):
         self.tag = tag
+        self.repo = repo
 
     @property
     def name(self) -> str:
-        return self.tag.name
+        return self.tag.tag
 
     @property
     def commit(self) -> GitHubCommit:
-        return GitHubCommit(self.tag.commit.refresh())
+        return self.repo.get_commit(self.tag.object.sha)
 
     @property
     def annotation(self) -> str:
@@ -145,7 +167,7 @@ class GitHubRelease(Release):
 
     @property
     def body(self) -> str:
-        raise NotImplementedError
+        return self.release.body
 
     @property
     def commit(self) -> Commit:
@@ -161,18 +183,28 @@ class GitHubRelease(Release):
 
 
 class GitHubPullRequest(PullRequest):
+
+    pull_request: github3.pulls.ShortPullRequest
+    repo: 'GitHubRepository'
+
+    def __init__(self, pull_request: github3.pulls.ShortPullRequest, repo: 'GitHubRepository'):
+        self.pull_request = pull_request
+        self.repo = repo
+
     @property
     def base(self) -> Branch:
-        raise NotImplementedError
+        return self.repo.get_branch(self.pull_request.base.ref)
 
     @property
     def source(self) -> Branch:
-        raise NotImplementedError
+        return self.repo.get_branch(self.pull_request.head.ref)
 
 
 
 class GitHubRepository(Repository):
     __slots__ = ["repo"]
+
+    repo: github3.repos.repo.Repository
 
     def __init__(self, repo: github3.repos.repo.Repository):
         self.repo = repo
@@ -199,24 +231,24 @@ class GitHubRepository(Repository):
     @property
     def tags(self) -> T.Iterable[GitHubTag]:
         for t in self.repo.tags():
-            yield GitHubTag(self.repo.get_tag(t))
+            yield GitHubTag(t, self)
 
     def get_tag(self, name: str) -> GitHubTag:
-        # TODO: how to get by name?
-        return GitHubTag(self.repo.tag(sha))
+        return GitHubTag(self.repo.tag(self.repo.ref(f"tags/{name}").object.sha), self)
 
     @property
     def releases(self) -> T.Iterable[GitHubRelease]:
-        for r in self.repo.get_releases():
-            yield GitHubRelease(r)  # ?
+        for r in self.repo.releases():
+            yield GitHubRelease(r, self)
 
     def get_release(self, tag_name: str) -> GitHubRelease:
         # TODO: github3 returns None for not found
-        return GitHubRelease(self.repo.release_from_tag(tag_name))
+        return GitHubRelease(self.repo.release_from_tag(tag_name), self)
 
     @property
     def pull_requests(self) -> T.Iterable[GitHubPullRequest]:
-        pass
+        for pr in self.repo.pull_requests():
+            yield GitHubPullRequest(pr, self)
 
 
 @connection(host=GITHUB_HOST, auth_classes=[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth])

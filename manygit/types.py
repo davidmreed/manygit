@@ -1,20 +1,18 @@
 import abc
 import typing as T
 from collections import defaultdict
-
-try:
-    import manygit.gitlab
-except ImportError:
-    pass
-
-try:
-    import manygit.github
-except ImportError:
-    pass
+import enum
 
 
 class ManygitException(Exception):
     pass
+
+
+class CommitStatusEnum(str, enum.Enum):
+    PENDING = "pending"
+    SUCCESS = "success"
+    FAILED = "failed"
+
 
 class CommitStatus(abc.ABC):
     @property
@@ -24,7 +22,7 @@ class CommitStatus(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def status(self) -> str:
+    def status(self) -> CommitStatusEnum:
         ...
 
     @property
@@ -120,6 +118,8 @@ class Release(abc.ABC):
 
 
 class PullRequest(abc.ABC):
+    # TODO: name, user, status, identifier
+    
     @property
     @abc.abstractmethod
     def base(self) -> Branch:

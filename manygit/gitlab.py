@@ -10,9 +10,11 @@ from .types import (
     Tag,
     Release,
     CommitStatus,
+    CommitStatusEnum,
     PullRequest,
     Repository,
-    connection
+    connection,
+    ManygitException
 )
 
 
@@ -42,8 +44,18 @@ class GitLabCommitStatus(CommitStatus):
         return self.commit_status.name
 
     @property
-    def status(self) -> str:
-        return self.commit_status.status
+    def status(self) -> CommitStatusEnum:
+        status = self.commit_status.status
+
+        if status in ["pending", "running"]:
+            return CommitStatusEnum.PENDING
+        elif status in ["failed", "canceled"]:
+            return CommitStatusEnum.FAILED
+        elif status == "success":
+            return CommitStatusEnum.SUCCESS
+
+        raise ManygitException(f"Invalid commit status value {str}")
+
 
     @property
     def data(self) -> T.Optional[str]:
