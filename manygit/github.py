@@ -9,10 +9,25 @@ from .types import (
     CommitStatus,
     Commit,
     Repository,
-    GitHubOAuthTokenAuth,
-    GitHubPersonalAccessTokenAuth,
+    connection
 )
 import typing as T
+
+import pydantic
+
+GITHUB_HOST = "GITHUB"
+
+
+class GitHubOAuthTokenAuth(pydantic.BaseModel):
+    oauth_token: str
+    enterprise_url: T.Optional[str]
+
+
+class GitHubPersonalAccessTokenAuth(pydantic.BaseModel):
+    username: str
+    personal_access_token: str
+    enterprise_url: T.Optional[str]
+
 
 GitHubAuth = T.Union[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth]
 
@@ -112,17 +127,27 @@ class GitHubRelease(Release):
     __slots__ = ["release"]
 
     release: github3.repos.release.Release
+    repo: 'GitHubRepository'
 
-    def __init__(self, release: github3.repos.release.Release):
+    def __init__(self, release: github3.repos.release.Release, repo: 'GitHubRepository'):
         self.release = release
+        self.repo = repo
 
     @property
     def tag(self) -> GitHubTag:
-        return get_tag(self.release.tag_name)
+        return self.repo.get_tag(self.release.tag_name)
 
     @property
     def name(self) -> str:
         return self.release.name
+
+    @property
+    def body(self) -> str:
+        raise NotImplementedError
+
+    @property
+    def commit(self) -> Commit:
+        return self.tag.commit
 
     @property
     def is_draft(self) -> bool:
@@ -133,43 +158,66 @@ class GitHubRelease(Release):
         return self.release.prerelease
 
 
+class GitHubPullRequest(PullRequest):
+    @property
+    def base(self) -> Branch:
+        raise NotImplementedError
+
+    @property
+    def source(self) -> Branch:
+        raise NotImplementedError
+
+
+
 class GitHubRepository(Repository):
     __slots__ = ["repo"]
 
     def __init__(self, repo: github3.repos.repo.Repository):
         self.repo = repo
 
-    def branches(self) -> T.Iterable[Branch]:
+    @property
+    def commits(self) -> T.Iterable[GitHubCommit]:
+        raise NotImplementedError
+
+    def get_commit(self, sha: str) -> GitHubCommit:
+        raise NotImplementedError
+
+    @property
+    def branches(self) -> T.Iterable[GitHubBranch]:
         for branch in self.repo.branches():
             yield self.get_branch(branch.name)
 
-    def get_branch(self, name: str) -> Branch:
-        return GitHubBranch(self.repo.branch(name))
+    def get_branch(self, name: str) -> GitHubBranch:
+        return GitHubBranch(self.repo.branch(name), self)
 
-    def tags(self) -> T.Iterable[Tag]:
+    @property
+    def default_branch(self) -> GitHubBranch:
+        return self.get_branch(self.repo.default_branch)
+
+    @property
+    def tags(self) -> T.Iterable[GitHubTag]:
         for t in self.repo.tags():
             yield GitHubTag(self.repo.get_tag(t))
 
-    def get_tag(self, name: str) -> Tag:
+    def get_tag(self, name: str) -> GitHubTag:
         # TODO: how to get by name?
         return GitHubTag(self.repo.tag(sha))
 
-    def get_releases(self) -> T.Iterable[Release]:
+    @property
+    def releases(self) -> T.Iterable[GitHubRelease]:
         for r in self.repo.get_releases():
             yield GitHubRelease(r)  # ?
 
-    def get_release(self, tag_name: str) -> Release:
+    def get_release(self, tag_name: str) -> GitHubRelease:
         # TODO: github3 returns None for not found
         return GitHubRelease(self.repo.release_from_tag(tag_name))
 
-    def get_commit(self, sha: str) -> Commit:
-        return GitHubCommit(self.repo.commit(sha))
-
-    @property
-    def default_branch(self) -> Branch:
-        return self.get_branch(self.repo.default_branch)
+    def get_commit(self, sha: str) -> GitHubCommit:
+        return GitHubCommit(self.repo.commit(sha), self)
 
 
+
+@connection(host=GITHUB_HOST, auth_classes=[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth])
 class GitHubConnection(Connection):
 
     conn: T.Union[github3.github.GitHubEnterprise, github3.github.GitHub]

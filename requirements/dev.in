@@ -1,3 +1,4 @@
+-r prod.in
 black
 isort
 flake8

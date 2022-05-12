@@ -2,7 +2,20 @@ import abc
 import typing as T
 import enum
 import pydantic
+from collections import defaultdict
 
+try:
+    import manygit.gitlab
+except ImportError:
+    pass
+try:
+    import manygit.github
+except ImportError:
+    pass
+
+
+class ManygitException(Exception):
+    pass
 
 class CommitStatus(abc.ABC):
     @property
@@ -65,7 +78,7 @@ class Release(abc.ABC):
         pass
 
     @property
-    def title(self) -> str:
+    def name(self) -> str:
         pass
 
     @property
@@ -76,7 +89,14 @@ class Release(abc.ABC):
     def commit(self) -> Commit:
         return self.tag.commit
 
-    # TODO: Release Assets
+    @property
+    def is_draft(self) -> bool:
+        return False
+
+    @property
+    def is_prerelease(self) -> bool:
+        return False
+
 
 
 class PullRequest(abc.ABC):
@@ -85,13 +105,21 @@ class PullRequest(abc.ABC):
         pass
 
     @property
-    def target(self) -> Branch:
+    def source(self) -> Branch:
         pass
 
 
 class Repository(abc.ABC):
     __slots__ = []
 
+    @property
+    def commits(self) -> T.Iterable[Commit]:
+        pass
+
+    def get_commit(self, sha: str) -> Commit:
+        pass
+
+    @property
     def branches(self) -> T.Iterable[Branch]:
         pass
 
@@ -102,76 +130,75 @@ class Repository(abc.ABC):
     def default_branch(self) -> Branch:
         pass
 
+    @property
     def tags(self) -> T.Iterable[Tag]:
         pass
 
     def get_tag(self, name: str) -> Tag:
         pass
 
+    @property
     def releases(self) -> T.Iterable[Release]:
         pass
 
     def get_release(self, name: str) -> Release:
         pass
 
+    @property
+    def pull_requests(self) -> T.Iterable[PullRequest]:
+        pass
+
 
 class Connection(abc.ABC):
-    def is_eligible_repo(self, repo: str) -> bool:
+    def is_eligible_repo(self, repo: str) -> T.Tuple[bool, str]:
         pass
 
     def get_repo(self, repo: str) -> Repository:
         pass
 
 
-class GitHost(str, enum.Enum):
-    GITHUB = "GitHub"
-    GITLAB = "GitLab"
-    BITBUCKET = "BitBucket"
-    GITEA = "Gitea"
-    AZURE_DEVOPS = "Azure DevOps"
-
-
-class GitHubOAuthTokenAuth(pydantic.BaseModel):
-    oauth_token: str
-    enterprise_url: T.Optional[str]
-
-
-class GitHubPersonalAccessTokenAuth(pydantic.BaseModel):
-    username: str
-    personal_access_token: str
-    enterprise_url: T.Optional[str]
-
-
-class GitLabOAuthTokenAuth(pydantic.BaseModel):
-    oauth_token: str
-    enterprise_url: T.Optional[str]
-
-
-class GitLabPersonalAccessTokenAuth(pydantic.BaseModel):
-    personal_access_token: str
-    enterprise_url: T.Optional[str]
-
-
 class RepositoryException(Exception):
     pass
+
+
+connection_classes = {}
+available_hosts = defaultdict(list)
+
+
+def connection(*, host: str, auth_classes: list[T.Type]):
+    def _connection(klass: T.Type):
+        for c in auth_classes:
+            connection_classes[c] = klass
+
+        available_hosts[host].extend(auth_classes)
+    
+    return _connection
+
+
+def get_available_hosts() -> T.Iterable[str]:
+    return available_hosts.keys()
 
 
 class ConnectionManager:
     __slots__ = ["connections"]
 
-    connections: dict[GitHost, Connection]
+    connections: list[T.Any]
 
-    def __init__(self, connections: T.Optional[dict[GitHost, Connection]] = None):
-        self.connections = connections or {}
+    def __init__(self, connections: T.Optional[list[T.Any]] = None):
+        self.connections = []
+        for c in connections or []:
+            self.add_connection(c)
 
-    def add_connection(self, host: GitHost, connection: Connection):
-        self.connections[host] = connection
+    def add_connection(self, conn: T.Any):
+        if type(conn) in connection_classes:
+            connection_class = connection_classes[type(conn)]
+            self.connections.append(connection_class(conn))
+        else:
+            raise ManygitException(f"{conn} is not an instance of a Git host authentication class")
 
     def get_repo(self, repo: str, host_hint: T.Optional[GitHost] = None) -> Repository:
         """Given a string and an optional hint as to the host service,
         attempt to create a Repository instance."""
-
-        host: Optional[GitHost] = None
 
         if host_hint and host_hint in self.connections:
             repo_eligible, repo_normalized = self.connections[
@@ -180,7 +207,7 @@ class ConnectionManager:
             if repo_eligible:
                 return self.connections[host_hint].get_repo(repo_normalized)
 
-        for conn in self.connections.values():
+        for conn in self.connections:
             repo_eligible, repo_normalized = conn.is_eligible_repo(repo)
             if repo_eligible:
                 return conn.get_repo(repo_normalized)

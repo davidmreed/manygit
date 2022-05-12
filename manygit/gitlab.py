@@ -13,12 +13,28 @@ from .types import (
     Commit,
     PullRequest,
     Repository,
-    GitLabOAuthTokenAuth,
-    GitLabPersonalAccessTokenAuth,
+    connection
 )
+
+import pydantic
+
+GITLAB_HOST = "GITLAB"
+
+class GitLabOAuthTokenAuth(pydantic.BaseModel):
+    oauth_token: str
+    enterprise_url: T.Optional[str]
+
+
+class GitLabPersonalAccessTokenAuth(pydantic.BaseModel):
+    personal_access_token: str
+    enterprise_url: T.Optional[str]
 
 
 class GitLabCommitStatus(CommitStatus):
+    __slots__ = ['commit_status']
+
+    commit_status: gitlab.v4.objects.ProjectCommitStatus
+    
     @property
     def name(self) -> str:
         pass
@@ -33,80 +49,115 @@ class GitLabCommitStatus(CommitStatus):
 
 
 class GitLabCommit(Commit):
+    __slots__ = ['commit']
+
+    commit: gitlab.v4.objects.ProjectCommitStatus
+
+    def __init__(self, commit: gitlab.v4.objects.ProjectCommitStatus):
+        self.commit = commit
+
     @property
     def sha(self) -> str:
-        pass
+        return self.commit.id
 
     @property
     def statuses(self) -> T.Iterable[CommitStatus]:
-        pass
+        for cs in self.commit.statuses.list(all=True, as_list=False):
+            yield GitLabCommitStatus(cs)
 
     def download(self):
         pass
 
     @property
-    def parents(self) -> T.Iterable["Commit"]:
-        pass
+    def parents(self) -> T.Iterable["GitLabCommit"]:
+        for c in self.commit.parent_ids:
+            yield GitLabCommit(self.commit.manager.get(c))
 
 
 class GitLabBranch(Branch):
-    __slots__ = ["branch"]
+    __slots__ = ["branch", "repo"]
     branch: gitlab.v4.objects.ProjectBranch
+    repo: 'GitLabRepository'
 
-    def __init__(self, branch):
+    def __init__(self, branch: gitlab.v4.objects.ProjectBranch, repo: 'GitLabRepository'):
         self.branch = branch
+        self.repo = repo
 
     @property
     def name(self) -> str:
         return self.branch.name
 
     @property
-    def head(self) -> Commit:
-        pass
+    def head(self) -> GitLabCommit:
+        return self.repo.get_commit(self.branch.commit['id'])
 
 
 class GitLabTag(Tag):
+    __slots__ = ["tag", "repo"]
+
+    tag: gitlab.v4.objects.tags.ProjectTag
+    repo: 'GitLabRepository'
+
+    def __init__(self, tag: gitlab.v4.objects.tags.ProjectTag, repo: 'GitLabRepository'):
+        self.tag = tag
+        self.repo = repo
+
     @property
     def name(self) -> str:
-        pass
+        return self.tag.name
 
     @property
     def commit(self) -> GitLabCommit:
-        pass
+        return self.repo.get_commit(self.tag.target)
 
     @property
     def annotation(self) -> str:
-        pass
+        return self.tag.message
 
 
 class GitLabRelease(Release):
-    @property
-    def tag(self) -> GitLabTag:
-        pass
+    __slots__ = ['repo', 'release']
+
+    repo: 'GitLabRepository'
+    release: gitlab.v4.objects.ProjectRelease
+
+    def __init__(self, release: gitlab.v4.objects.ProjectRelease, repo: 'GitLabRepository'):
+        self.repo = repo
+        self.release = release
 
     @property
-    def title(self) -> str:
-        pass
+    def tag(self) -> GitLabTag:
+        return self.repo.get_tag(self.release.tag_name)
+
+    @property
+    def name(self) -> str:
+        return self.release.name
 
     @property
     def body(self) -> str:
-        pass
+        return self.release.description
 
     @property
     def commit(self) -> GitLabCommit:
-        return self.tag.commit
+        return self.repo.get_commit(self.release.commit['id'])
 
-    # TODO: Release Assets
 
 
 class GitLabPullRequest(PullRequest):
-    @property
-    def base(self) -> Branch:
-        pass
+    pr: gitlab.v4.objects.ProjectMergeRequest
+    repo: 'GitLabRepository'
+
+    def __init__(self, pr: gitlab.v4.objects.ProjectMergeRequest, repo: 'GitLabRepository'):
+        self.pr = pr 
+        self.repo = repo
 
     @property
-    def target(self) -> Branch:
-        pass
+    def base(self) -> Branch:
+        return self.repo.get_branch(self.pr.target_branch)
+
+    @property
+    def source(self) -> Branch:
+        return self.repo.get_branch(self.pr.source_branch)
 
 
 class GitLabRepository(Repository):
@@ -117,37 +168,60 @@ class GitLabRepository(Repository):
     def __init__(self, repo: gitlab.v4.objects.Project):
         self.repo = repo
 
+    @property
+    def commits(self) -> T.Iterable[GitLabCommit]:
+        for c in self.repo.commits.list(all=True, as_list=False):
+            yield GitLabCommit(c)
+
+    def get_commit(self, sha: str) -> GitLabCommit:
+        return GitLabCommit(self.repo.commits.get(id=sha))
+
+    @property
     def branches(self) -> T.Iterable[GitLabBranch]:
-        for b in self.repo.branches.iter():
-            yield GitLabBranch(b)
+        for b in self.repo.branches.list(all=True, as_list=False):
+            yield GitLabBranch(b, self)
 
     def get_branch(self, name: str) -> GitLabBranch:
-        return GitLabBranch(self.repo.branches.get(name))
+        return GitLabBranch(self.repo.branches.get(name), self)
 
     @property
     def default_branch(self) -> GitLabBranch:
         return self.get_branch(self.repo.default_branch)
 
+    @property
     def tags(self) -> T.Iterable[GitLabTag]:
-        pass
+        for t in self.repo.tags.list(all=True, as_list=False):
+            yield GitLabTag(t, self)
 
     def get_tag(self, name: str) -> GitLabTag:
-        pass
+        return GitLabTag(self.repo.tags.get(name), self)
 
+    @property
     def releases(self) -> T.Iterable[GitLabRelease]:
-        pass
+        for r in self.repo.releases.list(all=True, as_list=False):
+            yield GitLabRelease(r, self)
 
     def get_release(self, name: str) -> GitLabRelease:
-        pass
+        return GitLabRelease(self.repo.releases.get(name), self)
+
+    @property
+    def pull_requests(self) -> T.Iterable[GitLabPullRequest]:
+        for pr in self.repo.mergerequests.list(all=True, as_list=False):
+            yield GitLabPullRequest(pr, self)
 
 
 GitLabAuth = T.Union[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth]
 
 
+@connection(host=GITLAB_HOST, auth_classes=[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth])
 class GitLabConnection(Connection):
-    conn: gitlab.Gitlab
+    __slots__ = ['conn', 'enterprise_url']
 
+    conn: gitlab.Gitlab
     enterprise_url: T.Optional[str]
+
+    auth_type = GitLabAuth
+    host = GITLAB_HOST
 
     def __init__(self, auth: GitLabAuth):
         if isinstance(auth, GitLabPersonalAccessTokenAuth):
