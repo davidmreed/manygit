@@ -2,10 +2,9 @@ import abc
 import enum
 import typing as T
 from collections import defaultdict
+from dataclasses import dataclass
 
-
-class ManygitException(Exception):
-    pass
+from .exceptions import ConnectionException
 
 
 class CommitStatusEnum(str, enum.Enum):
@@ -103,7 +102,6 @@ class Release(abc.ABC):
         ...
 
     @property
-    @abc.abstractmethod
     def commit(self) -> Commit:
         return self.tag.commit
 
@@ -128,6 +126,39 @@ class PullRequest(abc.ABC):
     @abc.abstractmethod
     def source(self) -> Branch:
         ...
+
+
+@dataclass
+class PullRequestData:
+    title: str
+    base: Branch
+    source: Branch
+    body: T.Optional[str]
+
+
+@dataclass
+class TagData:
+    tag_name: str
+    commit: Commit
+    message: str
+
+
+@dataclass
+class ReleaseData:
+    tag: Tag
+    name: str
+    body: T.Optional[str]
+    is_prerelease: bool = False
+    is_draft: bool = False
+
+
+@dataclass
+class CommitStatusData:
+    commit: Commit
+    state: CommitStatusEnum
+    url: T.Optional[str]
+    name: str
+    description: T.Optional[str]
 
 
 class Repository(abc.ABC):
@@ -179,6 +210,30 @@ class Repository(abc.ABC):
     def pull_requests(self) -> T.Iterable[PullRequest]:
         ...
 
+    @abc.abstractmethod
+    def merge_branches(self, base: Branch, source: Branch):
+        ...
+
+    @abc.abstractmethod
+    def set_commit_status(self, commit: Commit, commit_status: CommitStatusData):
+        ...
+
+    @abc.abstractmethod
+    def create_tag(self, data: TagData) -> Tag:
+        ...
+
+    @abc.abstractmethod
+    def create_release(self, data: ReleaseData) -> Release:
+        ...
+
+    @abc.abstractmethod
+    def create_pull_request(self, data: PullRequestData) -> PullRequest:
+        ...
+
+    @abc.abstractmethod
+    def merge_pull_request(self, pull_request: PullRequest):
+        ...
+
 
 class Connection(abc.ABC):
     @abc.abstractmethod
@@ -192,10 +247,6 @@ class Connection(abc.ABC):
     @abc.abstractmethod
     def get_repo(self, repo: str) -> Repository:
         ...
-
-
-class RepositoryException(Exception):
-    pass
 
 
 connection_classes: dict[T.Type[T.Any], T.Type[Connection]] = {}
@@ -231,7 +282,7 @@ class ConnectionManager:
             connection_class = connection_classes[type(conn)]
             self.connections.append(connection_class(conn))
         else:
-            raise ManygitException(
+            raise ConnectionException(
                 f"{conn} is not an instance of a Git host authentication class"
             )
 
@@ -239,22 +290,18 @@ class ConnectionManager:
         """Given a string and an optional hint as to the host service,
         attempt to create a Repository instance."""
 
-        if host_hint and host_hint in self.connections:
-            repo_eligible, repo_normalized = self.connections[
-                host_hint
-            ].is_eligible_repo(repo)
-            if repo_eligible:
-                return self.connections[host_hint].get_repo(repo_normalized)
+        eligible_classes = self.connections
 
-        for conn in self.connections:
+        if host_hint and host_hint in available_hosts:
+            eligible_classes = [
+                t for t in self.connections if type(t) in available_hosts[host_hint]
+            ]
+
+        for conn in eligible_classes:
             repo_eligible, repo_normalized = conn.is_eligible_repo(repo)
             if repo_eligible:
                 return conn.get_repo(repo_normalized)
 
-        raise RepositoryException(
+        raise ConnectionException(
             f"No available connections accept the repo specification {repo}"
         )
-        # BitBucket URL patterns
-        # https://bitbucket.org/davidreed/amaxa/src/master
-        # git@bitbucket.org:davidreed/amaxa.git
-        # https://davidreed@bitbucket.org/davidreed/amaxa.git

@@ -1,5 +1,5 @@
 try:
-    import manygit.gitlab
+    import manygit.gitlab  # noqa
 except ImportError:
     pass
 

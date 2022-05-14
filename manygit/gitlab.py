@@ -3,13 +3,13 @@ from dataclasses import dataclass
 
 import gitlab.v4.objects
 
+from .exceptions import ManygitException
 from .types import (
     Branch,
     Commit,
     CommitStatus,
     CommitStatusEnum,
     Connection,
-    ManygitException,
     PullRequest,
     Release,
     Repository,
