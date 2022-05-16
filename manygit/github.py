@@ -119,7 +119,7 @@ class GitHubCommit(Commit):
 
     @property
     @exc
-    def statuses(self) -> T.Iterable[CommitStatus]:
+    def statuses(self) -> T.Iterator[CommitStatus]:
         for s in self.commit.statuses():
             yield GitHubCommitStatus(T.cast(Github3Status, s))
 
@@ -128,8 +128,9 @@ class GitHubCommit(Commit):
 
     @property
     @exc
-    def parents(self) -> T.Iterable[Commit]:
-        return [self.repo.get_commit(c["sha"]) for c in self.commit.parents]
+    def parents(self) -> T.Iterator[Commit]:
+        for c in self.commit.parents:
+            yield self.repo.get_commit(c["sha"])
 
     @exc
     def set_commit_status(
@@ -267,7 +268,7 @@ class GitHubRepository(Repository):
         self.repo = repo
 
     @property
-    def commits(self) -> T.Iterable[GitHubCommit]:
+    def commits(self) -> T.Iterator[GitHubCommit]:
         raise NotImplementedError
 
     @exc
@@ -279,7 +280,7 @@ class GitHubRepository(Repository):
 
     @property
     @exc
-    def branches(self) -> T.Iterable[GitHubBranch]:
+    def branches(self) -> T.Iterator[GitHubBranch]:
         for branch in self.repo.branches():
             yield self.get_branch(T.cast(Github3ShortBranch, branch).name)
 
@@ -298,7 +299,7 @@ class GitHubRepository(Repository):
 
     @property
     @exc
-    def tags(self) -> T.Iterable[GitHubTag]:
+    def tags(self) -> T.Iterator[GitHubTag]:
         for t in self.repo.tags():
             yield GitHubTag(T.cast(Github3RepoTag, t), self)
 
@@ -315,7 +316,7 @@ class GitHubRepository(Repository):
 
     @property
     @exc
-    def releases(self) -> T.Iterable[GitHubRelease]:
+    def releases(self) -> T.Iterator[GitHubRelease]:
         for r in self.repo.releases():
             yield GitHubRelease(T.cast(Github3Release, r), self)
 
@@ -328,7 +329,7 @@ class GitHubRepository(Repository):
 
     @property
     @exc
-    def pull_requests(self) -> T.Iterable[GitHubPullRequest]:
+    def pull_requests(self) -> T.Iterator[GitHubPullRequest]:
         for pr in self.repo.pull_requests():
             yield GitHubPullRequest(T.cast(Github3ShortPullRequest, pr), self)
 

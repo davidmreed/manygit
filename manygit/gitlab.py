@@ -99,7 +99,7 @@ class GitLabCommit(Commit):
         return self.commit.id
 
     @property
-    def statuses(self) -> T.Iterable[CommitStatus]:
+    def statuses(self) -> T.Iterator[CommitStatus]:
         for cs in self.commit.statuses.list(all=True, as_list=False):
             yield GitLabCommitStatus(T.cast(ProjectCommitStatus, cs))
 
@@ -107,7 +107,7 @@ class GitLabCommit(Commit):
         pass
 
     @property
-    def parents(self) -> T.Iterable["GitLabCommit"]:
+    def parents(self) -> T.Iterator["GitLabCommit"]:
         for c in self.commit.parent_ids:
             yield GitLabCommit(self.commit.manager.get(c))  # type: ignore
 
@@ -226,7 +226,7 @@ class GitLabRepository(Repository):
         self.repo = repo
 
     @property
-    def commits(self) -> T.Iterable[GitLabCommit]:
+    def commits(self) -> T.Iterator[GitLabCommit]:
         for c in self.repo.commits.list(all=True, as_list=False):
             yield GitLabCommit(T.cast(ProjectCommit, c))
 
@@ -234,7 +234,7 @@ class GitLabRepository(Repository):
         return GitLabCommit(self.repo.commits.get(id=sha))
 
     @property
-    def branches(self) -> T.Iterable[GitLabBranch]:
+    def branches(self) -> T.Iterator[GitLabBranch]:
         for b in self.repo.branches.list(all=True, as_list=False):
             yield GitLabBranch(T.cast(ProjectBranch, b), self)
 
@@ -246,7 +246,7 @@ class GitLabRepository(Repository):
         return self.get_branch(self.repo.default_branch)
 
     @property
-    def tags(self) -> T.Iterable[GitLabTag]:
+    def tags(self) -> T.Iterator[GitLabTag]:
         for t in self.repo.tags.list(all=True, as_list=False):
             yield GitLabTag(T.cast(ProjectTag, t), self)
 
@@ -254,7 +254,7 @@ class GitLabRepository(Repository):
         return GitLabTag(self.repo.tags.get(name), self)
 
     @property
-    def releases(self) -> T.Iterable[GitLabRelease]:
+    def releases(self) -> T.Iterator[GitLabRelease]:
         for r in self.repo.releases.list(all=True, as_list=False):
             yield GitLabRelease(T.cast(ProjectRelease, r), self)
 
@@ -262,7 +262,7 @@ class GitLabRepository(Repository):
         return GitLabRelease(self.repo.releases.get(name), self)
 
     @property
-    def pull_requests(self) -> T.Iterable[GitLabPullRequest]:
+    def pull_requests(self) -> T.Iterator[GitLabPullRequest]:
         for pr in self.repo.mergerequests.list(all=True, as_list=False):
             yield GitLabPullRequest(T.cast(ProjectMergeRequest, pr), self)
 

@@ -42,7 +42,7 @@ class Commit(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def statuses(self) -> T.Iterable[CommitStatus]:
+    def statuses(self) -> T.Iterator[CommitStatus]:
         ...
 
     @abc.abstractmethod
@@ -51,7 +51,7 @@ class Commit(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def parents(self) -> T.Iterable["Commit"]:
+    def parents(self) -> T.Iterator["Commit"]:
         ...
 
     @abc.abstractmethod
@@ -146,7 +146,7 @@ class Repository(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def commits(self) -> T.Iterable[Commit]:
+    def commits(self) -> T.Iterator[Commit]:
         ...
 
     @abc.abstractmethod
@@ -155,7 +155,7 @@ class Repository(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def branches(self) -> T.Iterable[Branch]:
+    def branches(self) -> T.Iterator[Branch]:
         ...
 
     @abc.abstractmethod
@@ -169,7 +169,7 @@ class Repository(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def tags(self) -> T.Iterable[Tag]:
+    def tags(self) -> T.Iterator[Tag]:
         ...
 
     @abc.abstractmethod
@@ -178,7 +178,7 @@ class Repository(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def releases(self) -> T.Iterable[Release]:
+    def releases(self) -> T.Iterator[Release]:
         ...
 
     @abc.abstractmethod
@@ -187,7 +187,7 @@ class Repository(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def pull_requests(self) -> T.Iterable[PullRequest]:
+    def pull_requests(self) -> T.Iterator[PullRequest]:
         ...
 
     @abc.abstractmethod
