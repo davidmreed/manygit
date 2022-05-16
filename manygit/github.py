@@ -1,9 +1,18 @@
-import http
 import typing as T
 from dataclasses import dataclass
 
 import github3
 from github3.exceptions import GitHubException, TransportError
+from github3.git import Tag as Github3Tag
+from github3.pulls import ShortPullRequest as Github3ShortPullRequest
+from github3.repos.branch import Branch as Github3FullBranch
+from github3.repos.branch import ShortBranch as Github3ShortBranch
+from github3.repos.commit import RepoCommit as Github3RepoCommit
+from github3.repos.commit import ShortCommit as Github3ShortCommit
+from github3.repos.release import Release as Github3Release
+from github3.repos.repo import Repository as Github3Repository
+from github3.repos.status import Status as Github3Status
+from github3.repos.tag import RepoTag as Github3RepoTag
 
 from .exceptions import (
     ManygitException,
@@ -24,20 +33,6 @@ from .types import (
     Tag,
     connection,
 )
-from github3.repos.status import Status as Github3Status
-from github3.repos.branch import (
-    ShortBranch as Github3ShortBranch,
-    Branch as Github3FullBranch,
-)
-from github3.repos.commit import (
-    ShortCommit as Github3ShortCommit,
-    RepoCommit as Github3RepoCommit,
-)
-from github3.repos.repo import Repository as Github3Repository
-from github3.pulls import ShortPullRequest as Github3ShortPullRequest
-from github3.repos.release import Release as Github3Release
-from github3.repos.tag import RepoTag as Github3RepoTag
-from github3.git import Tag as Github3Tag
 
 GITHUB_HOST = "GITHUB"
 

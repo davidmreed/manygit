@@ -6,3 +6,10 @@ name="manygit"
 [project.optional_dependencies]
 github = ["github3.py"]
 gitlab = ["python-gitlab"]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.black]
+exclude = '^/(\.|dist|pybuild|venv)'

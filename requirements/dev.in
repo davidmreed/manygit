@@ -1,5 +1,6 @@
--r prod.in
 black
 isort
 flake8
 pytest
+pre-commit
+pip-tools

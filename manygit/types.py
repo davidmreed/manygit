@@ -2,7 +2,6 @@ import abc
 import enum
 import typing as T
 from collections import defaultdict
-from dataclasses import dataclass
 
 from .exceptions import ConnectionException
 

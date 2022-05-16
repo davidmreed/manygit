@@ -1,16 +1,16 @@
 import typing as T
 from dataclasses import dataclass
 
+from gitlab.client import Gitlab
 from gitlab.v4.objects import (
-    ProjectCommitStatus,
-    ProjectCommit,
     Project,
+    ProjectBranch,
+    ProjectCommit,
+    ProjectCommitStatus,
+    ProjectMergeRequest,
     ProjectRelease,
     ProjectTag,
-    ProjectBranch,
-    ProjectMergeRequest,
 )
-from gitlab.client import Gitlab
 
 from .exceptions import ManygitException
 from .types import (

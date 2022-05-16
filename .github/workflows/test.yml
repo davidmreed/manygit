@@ -1,0 +1,52 @@
+name: Feature Tests
+
+on: push
+
+jobs:
+  static-checks:
+    name: Static Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+          cache-dependency-path: requirements
+      - name: Run Commit Checks
+        shell: bash
+        run: |
+          make dev-install
+          pre-commit run --all
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.9, 3.10]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python }}
+          cache-dependency-path: requirements
+      - name: Install
+        shell: bash
+        run: |
+          make dev-install
+      - name: Run Unit Tests
+        shell: bash
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          GITLAB_ACCESS_TOKEN: ${{ secrets.GITLAB_ACCESS_TOKEN }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+        run: |
+          pytest
+      - name: Store Results
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: junit
+          path: test-reports
