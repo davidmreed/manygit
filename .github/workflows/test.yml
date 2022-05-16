@@ -22,15 +22,12 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python: ["3.9", "3.10"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: ${{ matrix.python }}
+          python-version: "3.9"
           cache-dependency-path: requirements
       - name: Install
         shell: bash
