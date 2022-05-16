@@ -55,6 +55,16 @@ class Commit(abc.ABC):
     def parents(self) -> T.Iterable["Commit"]:
         ...
 
+    @abc.abstractmethod
+    def set_commit_status(
+        self,
+        state: CommitStatusEnum,
+        name: str,
+        description: T.Optional[str],
+        url: T.Optional[str],
+    ):
+        ...
+
 
 class Branch(abc.ABC):
     @property
@@ -127,38 +137,9 @@ class PullRequest(abc.ABC):
     def source(self) -> Branch:
         ...
 
-
-@dataclass
-class PullRequestData:
-    title: str
-    base: Branch
-    source: Branch
-    body: T.Optional[str]
-
-
-@dataclass
-class TagData:
-    tag_name: str
-    commit: Commit
-    message: str
-
-
-@dataclass
-class ReleaseData:
-    tag: Tag
-    name: str
-    body: T.Optional[str]
-    is_prerelease: bool = False
-    is_draft: bool = False
-
-
-@dataclass
-class CommitStatusData:
-    commit: Commit
-    state: CommitStatusEnum
-    url: T.Optional[str]
-    name: str
-    description: T.Optional[str]
+    @abc.abstractmethod
+    def merge(self):
+        ...
 
 
 class Repository(abc.ABC):
@@ -215,23 +196,33 @@ class Repository(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def set_commit_status(self, commit: Commit, commit_status: CommitStatusData):
+    def create_tag(
+        self,
+        tag_name: str,
+        commit: Commit,
+        message: str,
+    ) -> Tag:
         ...
 
     @abc.abstractmethod
-    def create_tag(self, data: TagData) -> Tag:
+    def create_release(
+        self,
+        tag: Tag,
+        name: str,
+        body: T.Optional[str],
+        is_prerelease: bool = False,
+        is_draft: bool = False,
+    ) -> Release:
         ...
 
     @abc.abstractmethod
-    def create_release(self, data: ReleaseData) -> Release:
-        ...
-
-    @abc.abstractmethod
-    def create_pull_request(self, data: PullRequestData) -> PullRequest:
-        ...
-
-    @abc.abstractmethod
-    def merge_pull_request(self, pull_request: PullRequest):
+    def create_pull_request(
+        self,
+        title: str,
+        base: Branch,
+        source: Branch,
+        body: T.Optional[str],
+    ) -> PullRequest:
         ...
 
 
@@ -249,12 +240,12 @@ class Connection(abc.ABC):
         ...
 
 
-connection_classes: dict[T.Type[T.Any], T.Type[Connection]] = {}
-available_hosts: T.DefaultDict[str, list[T.Type[T.Any]]] = defaultdict(list)
+connection_classes: dict[type, type[Connection]] = {}
+available_hosts: T.DefaultDict[str, list[type]] = defaultdict(list)
 
 
-def connection(*, host: str, auth_classes: list[T.Type[T.Any]]):
-    def _connection(klass: T.Type[Connection]):
+def connection(*, host: str, auth_classes: list[type[T.Any]]):
+    def _connection(klass: type[Connection]):
         for c in auth_classes:
             connection_classes[c] = klass
 

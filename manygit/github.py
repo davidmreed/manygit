@@ -5,23 +5,39 @@ from dataclasses import dataclass
 import github3
 from github3.exceptions import GitHubException, TransportError
 
-from .exceptions import ManygitException, NetworkError, VCSException, map_exceptions
+from .exceptions import (
+    ManygitException,
+    NetworkError,
+    NotFoundError,
+    VCSException,
+    map_exceptions,
+)
 from .types import (
     Branch,
     Commit,
     CommitStatus,
-    CommitStatusData,
     CommitStatusEnum,
     Connection,
     PullRequest,
-    PullRequestData,
     Release,
-    ReleaseData,
     Repository,
     Tag,
-    TagData,
     connection,
 )
+from github3.repos.status import Status as Github3Status
+from github3.repos.branch import (
+    ShortBranch as Github3ShortBranch,
+    Branch as Github3FullBranch,
+)
+from github3.repos.commit import (
+    ShortCommit as Github3ShortCommit,
+    RepoCommit as Github3RepoCommit,
+)
+from github3.repos.repo import Repository as Github3Repository
+from github3.pulls import ShortPullRequest as Github3ShortPullRequest
+from github3.repos.release import Release as Github3Release
+from github3.repos.tag import RepoTag as Github3RepoTag
+from github3.git import Tag as Github3Tag
 
 GITHUB_HOST = "GITHUB"
 
@@ -47,9 +63,9 @@ exc = map_exceptions({TransportError: NetworkError, GitHubException: VCSExceptio
 class GitHubCommitStatus(CommitStatus):
     __slots__ = ["commit_status"]
 
-    commit_status: github3.repos.status.Status
+    commit_status: Github3Status
 
-    def __init__(self, commit_status: github3.repos.status.Status):
+    def __init__(self, commit_status: Github3Status):
         self.commit_status = commit_status
 
     @property
@@ -58,7 +74,7 @@ class GitHubCommitStatus(CommitStatus):
 
     @property
     def status(self) -> CommitStatusEnum:
-        return GitHubCommitStatus.from_github_status(self.commit_status.state)
+        return commit_status_from_github_status(self.commit_status.state)
 
     @property
     def data(self) -> str:
@@ -68,19 +84,19 @@ class GitHubCommitStatus(CommitStatus):
     def url(self) -> T.Optional[str]:
         return self.commit_status.target_url
 
-    @staticmethod
-    def from_github_status(status: str) -> CommitStatusEnum:
-        if status == "pending":
-            return CommitStatusEnum.PENDING
-        elif status in ["failure", "error"]:
-            return CommitStatusEnum.FAILED
-        elif status == "success":
-            return CommitStatusEnum.SUCCESS
 
-        raise ManygitException(f"Invalid commit status value {str}")
+def commit_status_from_github_status(status: str) -> CommitStatusEnum:
+    if status == "pending":
+        return CommitStatusEnum.PENDING
+    elif status in ["failure", "error"]:
+        return CommitStatusEnum.FAILED
+    elif status == "success":
+        return CommitStatusEnum.SUCCESS
+
+    raise ManygitException(f"Invalid commit status value {str}")
 
 
-def to_github_status(status: CommitStatusEnum) -> str:
+def commit_status_to_github_status(status: CommitStatusEnum) -> str:
     if status == CommitStatusEnum.PENDING:
         return "pending"
     elif status == CommitStatusEnum.FAILED:
@@ -89,9 +105,7 @@ def to_github_status(status: CommitStatusEnum) -> str:
     return "success"
 
 
-GitHub3Commit = T.Union[
-    github3.repos.commit.ShortCommit, github3.repos.commit.RepoCommit
-]
+GitHub3Commit = T.Union[Github3ShortCommit, Github3RepoCommit]
 
 
 class GitHubCommit(Commit):
@@ -112,7 +126,7 @@ class GitHubCommit(Commit):
     @exc
     def statuses(self) -> T.Iterable[CommitStatus]:
         for s in self.commit.statuses():
-            yield GitHubCommitStatus(s)
+            yield GitHubCommitStatus(T.cast(Github3Status, s))
 
     def download(self):
         raise NotImplementedError
@@ -122,16 +136,33 @@ class GitHubCommit(Commit):
     def parents(self) -> T.Iterable[Commit]:
         return [self.repo.get_commit(c["sha"]) for c in self.commit.parents]
 
+    @exc
+    def set_commit_status(
+        self,
+        state: CommitStatusEnum,
+        name: str,
+        description: T.Optional[str],
+        url: T.Optional[str],
+    ):
+        self.repo.repo.create_status(
+            sha=self.commit.sha,
+            state=commit_status_to_github_status(state),
+            target_url=url,
+            description=description,
+            context=name,
+        )
+
+
+Github3Branch = T.Union[Github3ShortBranch, Github3FullBranch]
+
 
 class GitHubBranch(Branch):
     __slots__ = ["branch", "repo"]
 
-    branch: github3.repos.branch.ShortBranch
+    branch: Github3Branch
     repo: "GitHubRepository"
 
-    def __init__(
-        self, branch: github3.repos.branch.ShortBranch, repo: "GitHubRepository"
-    ):
+    def __init__(self, branch: Github3Branch, repo: "GitHubRepository"):
         self.branch = branch
         self.repo = repo
 
@@ -144,16 +175,21 @@ class GitHubBranch(Branch):
     def head(self) -> Commit:
         # `self.branch.commit` is a MiniCommit, which we refresh
         # into a RepoCommit.
-        return GitHubCommit(self.branch.commit.refresh(), self.repo)
+        return GitHubCommit(
+            T.cast(Github3RepoCommit, self.branch.commit.refresh()), self.repo
+        )
+
+
+Github3AnyTag = T.Union[Github3RepoTag, Github3Tag]
 
 
 class GitHubTag(Tag):
     __slots__ = ["tag"]
 
-    tag: github3.repos.tag.RepoTag
+    tag: Github3AnyTag
     repo: "GitHubRepository"
 
-    def __init__(self, tag: github3.repos.tag.RepoTag, repo: "GitHubRepository"):
+    def __init__(self, tag: Github3AnyTag, repo: "GitHubRepository"):
         self.tag = tag
         self.repo = repo
 
@@ -173,12 +209,10 @@ class GitHubTag(Tag):
 class GitHubRelease(Release):
     __slots__ = ["release"]
 
-    release: github3.repos.release.Release
+    release: Github3Release
     repo: "GitHubRepository"
 
-    def __init__(
-        self, release: github3.repos.release.Release, repo: "GitHubRepository"
-    ):
+    def __init__(self, release: Github3Release, repo: "GitHubRepository"):
         self.release = release
         self.repo = repo
 
@@ -209,12 +243,10 @@ class GitHubRelease(Release):
 
 class GitHubPullRequest(PullRequest):
 
-    pull_request: github3.pulls.ShortPullRequest
+    pull_request: Github3ShortPullRequest
     repo: "GitHubRepository"
 
-    def __init__(
-        self, pull_request: github3.pulls.ShortPullRequest, repo: "GitHubRepository"
-    ):
+    def __init__(self, pull_request: Github3ShortPullRequest, repo: "GitHubRepository"):
         self.pull_request = pull_request
         self.repo = repo
 
@@ -226,13 +258,17 @@ class GitHubPullRequest(PullRequest):
     def source(self) -> Branch:
         return self.repo.get_branch(self.pull_request.head.ref)
 
+    @exc
+    def merge(self):
+        ...
+
 
 class GitHubRepository(Repository):
     __slots__ = ["repo"]
 
-    repo: github3.repos.repo.Repository
+    repo: Github3Repository
 
-    def __init__(self, repo: github3.repos.repo.Repository):
+    def __init__(self, repo: Github3Repository):
         self.repo = repo
 
     @property
@@ -241,17 +277,24 @@ class GitHubRepository(Repository):
 
     @exc
     def get_commit(self, sha: str) -> GitHubCommit:
-        return GitHubCommit(self.repo.commit(sha), self)
+        commit = self.repo.commit(sha)
+        if not commit:
+            raise NotFoundError
+        return GitHubCommit(commit, self)
 
     @property
     @exc
     def branches(self) -> T.Iterable[GitHubBranch]:
         for branch in self.repo.branches():
-            yield self.get_branch(branch.name)
+            yield self.get_branch(T.cast(Github3ShortBranch, branch).name)
 
     @exc
     def get_branch(self, name: str) -> GitHubBranch:
-        return GitHubBranch(self.repo.branch(name), self)
+        branch = self.repo.branch(name)
+        if not branch:
+            raise NotFoundError
+
+        return GitHubBranch(branch, self)
 
     @property
     @exc
@@ -262,28 +305,37 @@ class GitHubRepository(Repository):
     @exc
     def tags(self) -> T.Iterable[GitHubTag]:
         for t in self.repo.tags():
-            yield GitHubTag(t, self)
+            yield GitHubTag(T.cast(Github3RepoTag, t), self)
 
     @exc
     def get_tag(self, name: str) -> GitHubTag:
-        return GitHubTag(self.repo.tag(self.repo.ref(f"tags/{name}").object.sha), self)
+        ref = self.repo.ref(f"tags/{name}")
+        if not ref:
+            raise NotFoundError
+        tag = self.repo.tag(ref.object.sha)
+        if not tag:
+            raise NotFoundError
+
+        return GitHubTag(tag, self)
 
     @property
     @exc
     def releases(self) -> T.Iterable[GitHubRelease]:
         for r in self.repo.releases():
-            yield GitHubRelease(r, self)
+            yield GitHubRelease(T.cast(Github3Release, r), self)
 
     @exc
     def get_release(self, tag_name: str) -> GitHubRelease:
-        # TODO: github3 returns None for not found
-        return GitHubRelease(self.repo.release_from_tag(tag_name), self)
+        release = self.repo.release_from_tag(tag_name)
+        if not release:
+            raise NotFoundError
+        return GitHubRelease(release, self)
 
     @property
     @exc
     def pull_requests(self) -> T.Iterable[GitHubPullRequest]:
         for pr in self.repo.pull_requests():
-            yield GitHubPullRequest(pr, self)
+            yield GitHubPullRequest(T.cast(Github3ShortPullRequest, pr), self)
 
     @exc
     def merge_branches(self, base: GitHubBranch, source: GitHubBranch) -> bool:
@@ -293,7 +345,7 @@ class GitHubRepository(Repository):
         try:
             self.repo.merge(base.name, source.head.sha)
         except github3.exceptions.GitHubError as e:
-            if e.code != http.client.CONFLICT:
+            if e.code != 422:
                 raise
 
             return False
@@ -301,50 +353,57 @@ class GitHubRepository(Repository):
         return True
 
     @exc
-    def set_commit_status(
-        self, commit: GitHubCommit, commit_status: CommitStatusData
-    ) -> GitHubCommitStatus:
-        status = self.repo.create_status(
-            sha=commit_status.commit.sha,
-            state=to_github_status(commit_status.state),
-            target_url=commit_status.url,
-            description=commit_status.description,
-            context=commit_status.name,
-        )
-        return GitHubCommitStatus(status)
-
-    @exc
-    def create_tag(self, data: TagData) -> GitHubTag:
+    def create_tag(
+        self,
+        tag_name: str,
+        commit: GitHubCommit,
+        message: str,
+    ) -> GitHubTag:
         t = self.repo.create_tag(
-            tag=data.tag_name,
-            message=data.message,
-            src=data.commit.sha,
+            tag=tag_name,
+            message=message,
+            sha=commit.sha,
             obj_type="commit",
+            tagger={},  # TODO
         )
         return GitHubTag(t, self)
 
     @exc
-    def create_release(self, data: ReleaseData) -> GitHubRelease:
+    def create_release(
+        self,
+        tag: Tag,
+        name: str,
+        body: T.Optional[str],
+        is_prerelease: bool = False,
+        is_draft: bool = False,
+    ) -> GitHubRelease:
         release = self.repo.create_release(
-            tag_name=data.tag.name,
-            name=data.name,
-            body=data.body,
-            prerelease=data.is_prerelease,
-            draft=data.is_draft,
+            tag_name=tag.name,
+            name=name,
+            body=body,
+            prerelease=is_prerelease,
+            draft=is_draft,
         )
+        if not release:
+            raise VCSException
         return GitHubRelease(release, self)
 
     @exc
-    def create_pull_request(self, data: PullRequestData) -> GitHubPullRequest:
+    def create_pull_request(
+        self,
+        title: str,
+        base: Branch,
+        source: Branch,
+        body: T.Optional[str],
+    ) -> GitHubPullRequest:
         pr = self.repo.create_pull(
-            title=data.title, base=data.base.name, head=data.source.name, body=data.body
+            title=title, base=base.name, head=source.name, body=body
         )
         # raises UnprocessableEntity 422
-        return GitHubPullRequest(pr, self)
+        if not pr:
+            raise VCSException
 
-    @exc
-    def merge_pull_request(self, pull_request: GitHubPullRequest):
-        ...
+        return GitHubPullRequest(pr, self)
 
 
 @connection(
@@ -376,7 +435,10 @@ class GitHubConnection(Connection):
 
     @exc
     def get_repo(self, repo: str) -> GitHubRepository:
-        return GitHubRepository(self.conn.repository(*repo.split("/")))
+        repository = self.conn.repository(*repo.split("/"))
+        if not repository:
+            raise NotFoundError
+        return GitHubRepository(repository)
 
     def is_eligible_repo(self, repo: str) -> T.Tuple[bool, T.Optional[str]]:
         # GitHub URL patterns

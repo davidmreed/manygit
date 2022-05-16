@@ -1,7 +1,16 @@
 import typing as T
 from dataclasses import dataclass
 
-import gitlab.v4.objects
+from gitlab.v4.objects import (
+    ProjectCommitStatus,
+    ProjectCommit,
+    Project,
+    ProjectRelease,
+    ProjectTag,
+    ProjectBranch,
+    ProjectMergeRequest,
+)
+from gitlab.client import Gitlab
 
 from .exceptions import ManygitException
 from .types import (
@@ -32,12 +41,32 @@ class GitLabPersonalAccessTokenAuth:
     enterprise_url: T.Optional[str] = None
 
 
+def commit_status_from_gitlab(status: str) -> CommitStatusEnum:
+    if status in ["pending", "running"]:
+        return CommitStatusEnum.PENDING
+    elif status in ["failed", "canceled"]:
+        return CommitStatusEnum.FAILED
+    elif status == "success":
+        return CommitStatusEnum.SUCCESS
+
+    raise ManygitException(f"Invalid commit status value {str}")
+
+
+def commit_status_to_gitlab(status: CommitStatusEnum) -> str:
+    if status is CommitStatusEnum.PENDING:
+        return "pending"
+    elif status is CommitStatusEnum.FAILED:
+        return "failed"
+    elif status is CommitStatusEnum.SUCCESS:
+        return "success"
+
+
 class GitLabCommitStatus(CommitStatus):
     __slots__ = ["commit_status"]
 
-    commit_status: gitlab.v4.objects.ProjectCommitStatus
+    commit_status: ProjectCommitStatus
 
-    def __init__(self, commit_status: gitlab.v4.objects.ProjectCommitStatus):
+    def __init__(self, commit_status: ProjectCommitStatus):
         self.commit_status = commit_status
 
     @property
@@ -46,16 +75,7 @@ class GitLabCommitStatus(CommitStatus):
 
     @property
     def status(self) -> CommitStatusEnum:
-        status = self.commit_status.status
-
-        if status in ["pending", "running"]:
-            return CommitStatusEnum.PENDING
-        elif status in ["failed", "canceled"]:
-            return CommitStatusEnum.FAILED
-        elif status == "success":
-            return CommitStatusEnum.SUCCESS
-
-        raise ManygitException(f"Invalid commit status value {str}")
+        return commit_status_from_gitlab(self.commit_status.status)
 
     @property
     def data(self) -> T.Optional[str]:
@@ -69,9 +89,9 @@ class GitLabCommitStatus(CommitStatus):
 class GitLabCommit(Commit):
     __slots__ = ["commit"]
 
-    commit: gitlab.v4.objects.ProjectCommitStatus
+    commit: ProjectCommit
 
-    def __init__(self, commit: gitlab.v4.objects.ProjectCommitStatus):
+    def __init__(self, commit: ProjectCommit):
         self.commit = commit
 
     @property
@@ -81,7 +101,7 @@ class GitLabCommit(Commit):
     @property
     def statuses(self) -> T.Iterable[CommitStatus]:
         for cs in self.commit.statuses.list(all=True, as_list=False):
-            yield GitLabCommitStatus(cs)
+            yield GitLabCommitStatus(T.cast(ProjectCommitStatus, cs))
 
     def download(self):
         pass
@@ -89,17 +109,32 @@ class GitLabCommit(Commit):
     @property
     def parents(self) -> T.Iterable["GitLabCommit"]:
         for c in self.commit.parent_ids:
-            yield GitLabCommit(self.commit.manager.get(c))
+            yield GitLabCommit(self.commit.manager.get(c))  # type: ignore
+
+    def set_commit_status(
+        self,
+        state: CommitStatusEnum,
+        name: str,
+        description: T.Optional[str],
+        url: T.Optional[str],
+    ):
+
+        self.commit.statuses.create(
+            {
+                "name": name,
+                "description": description,
+                "target_url": url,
+                "state": commit_status_to_gitlab(state),
+            }
+        )
 
 
 class GitLabBranch(Branch):
     __slots__ = ["branch", "repo"]
-    branch: gitlab.v4.objects.ProjectBranch
+    branch: ProjectBranch
     repo: "GitLabRepository"
 
-    def __init__(
-        self, branch: gitlab.v4.objects.ProjectBranch, repo: "GitLabRepository"
-    ):
+    def __init__(self, branch: ProjectBranch, repo: "GitLabRepository"):
         self.branch = branch
         self.repo = repo
 
@@ -115,12 +150,10 @@ class GitLabBranch(Branch):
 class GitLabTag(Tag):
     __slots__ = ["tag", "repo"]
 
-    tag: gitlab.v4.objects.tags.ProjectTag
+    tag: ProjectTag
     repo: "GitLabRepository"
 
-    def __init__(
-        self, tag: gitlab.v4.objects.tags.ProjectTag, repo: "GitLabRepository"
-    ):
+    def __init__(self, tag: ProjectTag, repo: "GitLabRepository"):
         self.tag = tag
         self.repo = repo
 
@@ -141,11 +174,9 @@ class GitLabRelease(Release):
     __slots__ = ["repo", "release"]
 
     repo: "GitLabRepository"
-    release: gitlab.v4.objects.ProjectRelease
+    release: ProjectRelease
 
-    def __init__(
-        self, release: gitlab.v4.objects.ProjectRelease, repo: "GitLabRepository"
-    ):
+    def __init__(self, release: ProjectRelease, repo: "GitLabRepository"):
         self.repo = repo
         self.release = release
 
@@ -167,12 +198,10 @@ class GitLabRelease(Release):
 
 
 class GitLabPullRequest(PullRequest):
-    pr: gitlab.v4.objects.ProjectMergeRequest
+    pr: ProjectMergeRequest
     repo: "GitLabRepository"
 
-    def __init__(
-        self, pr: gitlab.v4.objects.ProjectMergeRequest, repo: "GitLabRepository"
-    ):
+    def __init__(self, pr: ProjectMergeRequest, repo: "GitLabRepository"):
         self.pr = pr
         self.repo = repo
 
@@ -184,19 +213,22 @@ class GitLabPullRequest(PullRequest):
     def source(self) -> Branch:
         return self.repo.get_branch(self.pr.source_branch)
 
+    def merge(self):
+        self.pr.merge()
+
 
 class GitLabRepository(Repository):
     __slots__ = ["repo"]
 
-    repo: gitlab.v4.objects.Project
+    repo: Project
 
-    def __init__(self, repo: gitlab.v4.objects.Project):
+    def __init__(self, repo: Project):
         self.repo = repo
 
     @property
     def commits(self) -> T.Iterable[GitLabCommit]:
         for c in self.repo.commits.list(all=True, as_list=False):
-            yield GitLabCommit(c)
+            yield GitLabCommit(T.cast(ProjectCommit, c))
 
     def get_commit(self, sha: str) -> GitLabCommit:
         return GitLabCommit(self.repo.commits.get(id=sha))
@@ -204,7 +236,7 @@ class GitLabRepository(Repository):
     @property
     def branches(self) -> T.Iterable[GitLabBranch]:
         for b in self.repo.branches.list(all=True, as_list=False):
-            yield GitLabBranch(b, self)
+            yield GitLabBranch(T.cast(ProjectBranch, b), self)
 
     def get_branch(self, name: str) -> GitLabBranch:
         return GitLabBranch(self.repo.branches.get(name), self)
@@ -216,7 +248,7 @@ class GitLabRepository(Repository):
     @property
     def tags(self) -> T.Iterable[GitLabTag]:
         for t in self.repo.tags.list(all=True, as_list=False):
-            yield GitLabTag(t, self)
+            yield GitLabTag(T.cast(ProjectTag, t), self)
 
     def get_tag(self, name: str) -> GitLabTag:
         return GitLabTag(self.repo.tags.get(name), self)
@@ -224,7 +256,7 @@ class GitLabRepository(Repository):
     @property
     def releases(self) -> T.Iterable[GitLabRelease]:
         for r in self.repo.releases.list(all=True, as_list=False):
-            yield GitLabRelease(r, self)
+            yield GitLabRelease(T.cast(ProjectRelease, r), self)
 
     def get_release(self, name: str) -> GitLabRelease:
         return GitLabRelease(self.repo.releases.get(name), self)
@@ -232,7 +264,62 @@ class GitLabRepository(Repository):
     @property
     def pull_requests(self) -> T.Iterable[GitLabPullRequest]:
         for pr in self.repo.mergerequests.list(all=True, as_list=False):
-            yield GitLabPullRequest(pr, self)
+            yield GitLabPullRequest(T.cast(ProjectMergeRequest, pr), self)
+
+    def merge_branches(self, base: GitLabBranch, source: Branch):
+        ...
+
+    def create_tag(
+        self,
+        tag_name: str,
+        commit: Commit,
+        message: str,
+    ) -> Tag:
+        tag = self.repo.tags.create(
+            {"tag_name": tag_name, "ref": commit.sha, "message": message}
+        )
+        return GitLabTag(T.cast(ProjectTag, tag), self)
+
+    def create_release(
+        self,
+        title: str,
+        base: Branch,
+        source: Branch,
+        body: T.Optional[str],
+    ) -> GitLabRelease:
+        release = T.cast(
+            ProjectRelease,
+            self.repo.releases.create(
+                {
+                    "name": "Demo Release",
+                    "tag_name": "v1.2.3",
+                    "description": "release notes go here",
+                }
+            ),
+        )
+
+        return GitLabRelease(release, self)
+
+    def create_pull_request(
+        self,
+        title: str,
+        base: Branch,
+        source: Branch,
+        body: T.Optional[str],
+    ) -> PullRequest:
+        pr = T.cast(
+            ProjectMergeRequest,
+            self.repo.mergerequests.create(
+                {
+                    "source_branch": source.name,
+                    "target_branch": base.name,
+                    "title": title,
+                    # TODO: body.
+                }
+            ),
+        )
+
+        return GitLabPullRequest(pr, self)
 
 
 GitLabAuth = T.Union[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth]
@@ -244,7 +331,7 @@ GitLabAuth = T.Union[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth]
 class GitLabConnection(Connection):
     __slots__ = []
 
-    conn: gitlab.Gitlab
+    conn: Gitlab
     enterprise_url: T.Optional[str]
 
     auth_type = GitLabAuth
@@ -257,10 +344,10 @@ class GitLabConnection(Connection):
             args = {"oauth_token": auth.oauth_token}
 
         if auth.enterprise_url:
-            self.conn = gitlab.Gitlab(url=auth.enterprise_url, **args)
+            self.conn = Gitlab(url=auth.enterprise_url, **args)
             self.enterprise_url = auth.enterprise_url
         else:
-            self.conn = gitlab.Gitlab(**args)
+            self.conn = Gitlab(**args)
             self.enterprise_url = None
 
     def get_repo(self, repo: str) -> GitLabRepository:
