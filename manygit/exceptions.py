@@ -21,6 +21,10 @@ class VCSException(ManygitException):
     pass
 
 
+class UnsupportedException(ManygitException):
+    pass
+
+
 def map_exceptions(exceptions: dict[type[Exception], type[Exception]]):
     def _wrapper(f):
         @wraps(f)

@@ -330,7 +330,7 @@ class GitHubRepository(Repository):
     @property
     @exc
     def pull_requests(self) -> T.Iterator[GitHubPullRequest]:
-        for pr in self.repo.pull_requests():
+        for pr in self.repo.pull_requests(state="open"):
             yield GitHubPullRequest(T.cast(Github3ShortPullRequest, pr), self)
 
     @exc

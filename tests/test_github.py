@@ -135,12 +135,12 @@ def test_set_commit_status(repo: GitHubRepository, test_branches):
     foo, _ = test_branches
     # GitHub doesn't allow us to delete a commit status.
     # We'll create a temporary branch and commit to apply it.
+    content = repo.repo.file_contents("/README.md")
+    assert content
     commit = repo.get_commit(
-        repo.repo.file_contents("/README.md")
-        .update("commit message", "file content".encode("utf-8"), branch=foo.name)[
-            "commit"
-        ]
-        .sha
+        content.update(
+            "commit message", "file content".encode("utf-8"), branch=foo.name
+        )["commit"].sha
     )
 
     commit.set_commit_status(

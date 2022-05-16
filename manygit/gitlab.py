@@ -12,7 +12,7 @@ from gitlab.v4.objects import (
     ProjectTag,
 )
 
-from .exceptions import ManygitException
+from .exceptions import ManygitException, UnsupportedException
 from .types import (
     Branch,
     Commit,
@@ -104,7 +104,7 @@ class GitLabCommit(Commit):
             yield GitLabCommitStatus(T.cast(ProjectCommitStatus, cs))
 
     def download(self):
-        pass
+        raise NotImplementedError
 
     @property
     def parents(self) -> T.Iterator["GitLabCommit"]:
@@ -263,18 +263,22 @@ class GitLabRepository(Repository):
 
     @property
     def pull_requests(self) -> T.Iterator[GitLabPullRequest]:
-        for pr in self.repo.mergerequests.list(all=True, as_list=False):
+        for pr in self.repo.mergerequests.list(all=True, as_list=False, state="opened"):
             yield GitLabPullRequest(T.cast(ProjectMergeRequest, pr), self)
 
-    def merge_branches(self, base: GitLabBranch, source: Branch):
-        ...
+    def merge_branches(self, base: GitLabBranch, source: GitLabBranch):
+        # The GitLab API does not appear to support merging branches
+        # absent a Merge Request.
+        raise UnsupportedException(
+            "GitLab repos do not support branch merging via API."
+        )
 
     def create_tag(
         self,
         tag_name: str,
         commit: Commit,
         message: str,
-    ) -> Tag:
+    ) -> GitLabTag:
         tag = self.repo.tags.create(
             {"tag_name": tag_name, "ref": commit.sha, "message": message}
         )
@@ -282,18 +286,20 @@ class GitLabRepository(Repository):
 
     def create_release(
         self,
-        title: str,
-        base: Branch,
-        source: Branch,
+        tag: GitLabTag,
+        name: str,
         body: T.Optional[str],
+        is_prerelease: bool = False,
+        is_draft: bool = False,
     ) -> GitLabRelease:
+        # GitLab does not (as far as I know) support draft or prerelease flags
         release = T.cast(
             ProjectRelease,
             self.repo.releases.create(
                 {
-                    "name": "Demo Release",
-                    "tag_name": "v1.2.3",
-                    "description": "release notes go here",
+                    "name": name,
+                    "tag_name": tag.name,
+                    "description": body,
                 }
             ),
         )
@@ -306,7 +312,7 @@ class GitLabRepository(Repository):
         base: Branch,
         source: Branch,
         body: T.Optional[str],
-    ) -> PullRequest:
+    ) -> GitLabPullRequest:
         pr = T.cast(
             ProjectMergeRequest,
             self.repo.mergerequests.create(
@@ -314,7 +320,7 @@ class GitLabRepository(Repository):
                     "source_branch": source.name,
                     "target_branch": base.name,
                     "title": title,
-                    # TODO: body.
+                    "description": body,
                 }
             ),
         )
