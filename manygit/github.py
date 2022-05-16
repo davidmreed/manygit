@@ -141,7 +141,7 @@ class GitHubCommit(Commit):
         url: T.Optional[str],
     ):
         self.repo.repo.create_status(
-            sha=self.commit.sha,
+            sha=self.sha,
             state=commit_status_to_github_status(state),
             target_url=url,
             description=description,

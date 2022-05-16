@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from manygit.github import GitHubPersonalAccessTokenAuth
+from manygit.github import GitHubPersonalAccessTokenAuth, GitHubRepository
 from manygit.types import CommitStatusEnum, ConnectionManager, Repository
 
 
@@ -131,13 +131,26 @@ def test_pull_request(repo, test_branches, main_commit, branch_commit):
     )
 
 
-def test_set_commit_status(repo, branch_commit):
+def test_set_commit_status(repo: GitHubRepository, test_branches):
+    foo, _ = test_branches
     # GitHub doesn't allow us to delete a commit status.
     # We'll create a temporary branch and commit to apply it.
-    commit = repo.get_commit(branch_commit)
+    commit = repo.get_commit(
+        repo.repo.file_contents("/README.md")
+        .update("commit message", "file content".encode("utf-8"), branch=foo.name)[
+            "commit"
+        ]
+        .sha
+    )
+
     commit.set_commit_status(
         CommitStatusEnum.SUCCESS,
         "Manygit Test",
         "Description",
         "https://github.com/davidmreed/manygit",
     )
+
+    statuses = list(commit.statuses)
+    assert len(statuses) == 1
+    assert statuses[0].status is CommitStatusEnum.SUCCESS
+    assert statuses[0].name == "Manygit Test"
