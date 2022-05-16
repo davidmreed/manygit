@@ -256,7 +256,7 @@ class GitHubPullRequest(PullRequest):
 
     @exc
     def merge(self):
-        ...
+        self.pull_request.session.put(self.pull_request.url + "/merge")
 
 
 class GitHubRepository(Repository):
@@ -360,8 +360,11 @@ class GitHubRepository(Repository):
             message=message,
             sha=commit.sha,
             obj_type="commit",
-            tagger={},  # TODO
+            tagger={"name": "manygit", "email": "manygit@example.com"},  # TODO
         )
+        if not t:
+            raise VCSException
+
         return GitHubTag(t, self)
 
     @exc
