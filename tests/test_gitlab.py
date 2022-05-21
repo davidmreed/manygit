@@ -5,9 +5,16 @@ import typing as T
 import pytest
 from gitlab.v4.objects import ProjectCommit
 
-from manygit.exceptions import UnsupportedException
-from manygit.gitlab import GitLabCommit, GitLabPersonalAccessTokenAuth, GitLabRepository
-from manygit.types import CommitStatusEnum, ConnectionManager, Repository
+from manygit import CommitStatusEnum, ConnectionManager, Repository
+from manygit.exceptions import ManygitException, UnsupportedException
+from manygit.gitlab import (
+    GitLabCommit,
+    GitLabConnection,
+    GitLabPersonalAccessTokenAuth,
+    GitLabRepository,
+    commit_status_from_gitlab,
+    commit_status_to_gitlab,
+)
 
 
 @pytest.fixture
@@ -38,6 +45,24 @@ def conn(personal_access_token: str) -> ConnectionManager:
 
 
 @pytest.fixture
+def fake_conn() -> GitLabConnection:
+    return GitLabConnection(
+        GitLabPersonalAccessTokenAuth(
+            personal_access_token="foo",
+        )
+    )
+
+
+@pytest.fixture
+def fake_enterprise_conn() -> GitLabConnection:
+    return GitLabConnection(
+        GitLabPersonalAccessTokenAuth(
+            personal_access_token="foo", enterprise_url="https://gitlab.ravenwood.com/"
+        )
+    )
+
+
+@pytest.fixture
 def repo(conn: ConnectionManager) -> Repository:
     return conn.get_repo("https://gitlab.com/davidmreed/manygit-test")
 
@@ -56,6 +81,7 @@ def test_branches(repo, branch_commit, main_commit):
     bar.delete()
 
 
+@pytest.mark.vcr
 def test_merge_branches(repo, main_commit, branch_commit, test_branches):
     # Create two branches and merge them together
     (foo, bar) = test_branches
@@ -64,6 +90,7 @@ def test_merge_branches(repo, main_commit, branch_commit, test_branches):
         repo.merge_branches(foo, bar)
 
 
+@pytest.mark.vcr
 def test_create_tag(repo):
     t = repo.create_tag("foo", repo.default_branch.head, "This is a test tag")
 
@@ -75,6 +102,7 @@ def test_create_tag(repo):
         t.tag.delete()
 
 
+@pytest.mark.vcr
 def test_create_release(repo: GitLabRepository):
     t = repo.create_tag("foo", repo.default_branch.head, "This is a test tag")
     r = repo.create_release(
@@ -90,6 +118,7 @@ def test_create_release(repo: GitLabRepository):
         t.tag.delete()
 
 
+@pytest.mark.vcr
 def test_create_pull_request(
     repo: GitLabRepository, test_branches, main_commit, branch_commit
 ):
@@ -110,6 +139,7 @@ def test_create_pull_request(
     )
 
 
+@pytest.mark.vcr
 def test_set_commit_status(repo: GitLabRepository, test_branches):
     foo, _ = test_branches
     # Create a temporary branch and commit to apply the status to.
@@ -143,3 +173,63 @@ def test_set_commit_status(repo: GitLabRepository, test_branches):
     assert len(statuses) == 1
     assert statuses[0].status is CommitStatusEnum.SUCCESS
     assert statuses[0].name == "Manygit Test"
+
+
+def test_is_eligible_repo(fake_conn: GitLabConnection):
+    assert fake_conn.is_eligible_repo("https://gitlab.com/davidmreed/manygit") == (
+        True,
+        "davidmreed/manygit",
+    )
+    assert fake_conn.is_eligible_repo("git@gitlab.com:davidmreed/manygit") == (
+        True,
+        "davidmreed/manygit",
+    )
+    assert fake_conn.is_eligible_repo("ssh://git@gitlab.com:davidmreed/manygit") == (
+        True,
+        "davidmreed/manygit",
+    )
+    assert fake_conn.is_eligible_repo("git@gitlab.com:davidmreed/manygit.git") == (
+        True,
+        "davidmreed/manygit",
+    )
+    assert fake_conn.is_eligible_repo("davidmreed/manygit") == (
+        True,
+        "davidmreed/manygit",
+    )
+
+    assert fake_conn.is_eligible_repo("git@github.com:davidmreed/manygit.git") == (
+        False,
+        None,
+    )
+
+
+def test_is_eligible_repo__enterprise(fake_enterprise_conn: GitLabConnection):
+    assert fake_enterprise_conn.is_eligible_repo(
+        "https://gitlab.ravenwood.com/davidmreed/manygit"
+    ) == (True, "davidmreed/manygit")
+    assert fake_enterprise_conn.is_eligible_repo(
+        "git@gitlab.ravenwood.com:davidmreed/manygit"
+    ) == (True, "davidmreed/manygit")
+    assert fake_enterprise_conn.is_eligible_repo(
+        "ssh://git@gitlab.ravenwood.com:davidmreed/manygit"
+    ) == (True, "davidmreed/manygit")
+    assert fake_enterprise_conn.is_eligible_repo(
+        "git@gitlab.ravenwood.com:davidmreed/manygit.git"
+    ) == (True, "davidmreed/manygit")
+
+
+def test_commit_status_to_gitlab():
+    assert commit_status_from_gitlab("pending") is CommitStatusEnum.PENDING
+    assert commit_status_from_gitlab("running") is CommitStatusEnum.PENDING
+    assert commit_status_from_gitlab("failed") is CommitStatusEnum.FAILED
+    assert commit_status_from_gitlab("canceled") is CommitStatusEnum.FAILED
+    assert commit_status_from_gitlab("success") is CommitStatusEnum.SUCCESS
+
+    with pytest.raises(ManygitException):
+        commit_status_from_gitlab("foo")
+
+
+def test_commit_status_from_gitlab():
+    assert commit_status_to_gitlab(CommitStatusEnum.PENDING) == "pending"
+    assert commit_status_to_gitlab(CommitStatusEnum.FAILED) == "failed"
+    assert commit_status_to_gitlab(CommitStatusEnum.SUCCESS) == "success"

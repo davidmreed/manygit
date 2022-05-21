@@ -2,8 +2,15 @@ import os
 
 import pytest
 
-from manygit.github import GitHubPersonalAccessTokenAuth, GitHubRepository
-from manygit.types import CommitStatusEnum, ConnectionManager, Repository
+from manygit import CommitStatusEnum, ConnectionManager, Repository
+from manygit.exceptions import ManygitException
+from manygit.github import (
+    GitHubConnection,
+    GitHubPersonalAccessTokenAuth,
+    GitHubRepository,
+    commit_status_from_github_status,
+    commit_status_to_github_status,
+)
 
 
 @pytest.fixture
@@ -40,6 +47,24 @@ def conn(personal_access_token: str, username: str) -> ConnectionManager:
 
 
 @pytest.fixture
+def fake_conn() -> GitHubConnection:
+    return GitHubConnection(
+        GitHubPersonalAccessTokenAuth(personal_access_token="foo", username="bar")
+    )
+
+
+@pytest.fixture
+def fake_enterprise_conn() -> GitHubConnection:
+    return GitHubConnection(
+        GitHubPersonalAccessTokenAuth(
+            personal_access_token="foo",
+            username="bar",
+            enterprise_url="https://github.ravenwood.com/",
+        )
+    )
+
+
+@pytest.fixture
 def repo(conn: ConnectionManager) -> Repository:
     return conn.get_repo("https://github.com/davidmreed/manygit-test")
 
@@ -70,6 +95,7 @@ def test_branches(repo, branch_commit, main_commit):
     )
 
 
+@pytest.mark.vcr
 def test_merge_branches(repo, main_commit, branch_commit, test_branches):
     # Create two branches and merge them together
     (foo, bar) = test_branches
@@ -81,6 +107,7 @@ def test_merge_branches(repo, main_commit, branch_commit, test_branches):
     )
 
 
+@pytest.mark.vcr
 def test_create_tag(repo):
     t = repo.create_tag("foo", repo.default_branch.head, "This is a test tag")
 
@@ -94,6 +121,7 @@ def test_create_tag(repo):
         )
 
 
+@pytest.mark.vcr
 def test_create_release(repo):
     t = repo.create_tag("foo", repo.default_branch.head, "This is a test tag")
     r = repo.create_release(
@@ -116,6 +144,7 @@ def test_create_release(repo):
         )
 
 
+@pytest.mark.vcr
 def test_pull_request(repo, test_branches, main_commit, branch_commit):
     foo, bar = test_branches
 
@@ -131,6 +160,7 @@ def test_pull_request(repo, test_branches, main_commit, branch_commit):
     )
 
 
+@pytest.mark.vcr
 def test_set_commit_status(repo: GitHubRepository, test_branches):
     foo, _ = test_branches
     # GitHub doesn't allow us to delete a commit status.
@@ -154,3 +184,62 @@ def test_set_commit_status(repo: GitHubRepository, test_branches):
     assert len(statuses) == 1
     assert statuses[0].status is CommitStatusEnum.SUCCESS
     assert statuses[0].name == "Manygit Test"
+
+
+def test_is_eligible_repo(fake_conn: GitHubConnection):
+    assert fake_conn.is_eligible_repo("https://github.com/davidmreed/manygit") == (
+        True,
+        "davidmreed/manygit",
+    )
+    assert fake_conn.is_eligible_repo("git@github.com:davidmreed/manygit") == (
+        True,
+        "davidmreed/manygit",
+    )
+    assert fake_conn.is_eligible_repo("ssh://git@github.com:davidmreed/manygit") == (
+        True,
+        "davidmreed/manygit",
+    )
+    assert fake_conn.is_eligible_repo("git@github.com:davidmreed/manygit.git") == (
+        True,
+        "davidmreed/manygit",
+    )
+    assert fake_conn.is_eligible_repo("davidmreed/manygit") == (
+        True,
+        "davidmreed/manygit",
+    )
+
+    assert fake_conn.is_eligible_repo("git@gitlab.com:davidmreed/manygit.git") == (
+        False,
+        None,
+    )
+
+
+def test_is_eligible_repo__enterprise(fake_enterprise_conn: GitHubConnection):
+    assert fake_enterprise_conn.is_eligible_repo(
+        "https://github.ravenwood.com/davidmreed/manygit"
+    ) == (True, "davidmreed/manygit")
+    assert fake_enterprise_conn.is_eligible_repo(
+        "git@github.ravenwood.com:davidmreed/manygit"
+    ) == (True, "davidmreed/manygit")
+    assert fake_enterprise_conn.is_eligible_repo(
+        "ssh://git@github.ravenwood.com:davidmreed/manygit"
+    ) == (True, "davidmreed/manygit")
+    assert fake_enterprise_conn.is_eligible_repo(
+        "git@github.ravenwood.com:davidmreed/manygit.git"
+    ) == (True, "davidmreed/manygit")
+
+
+def test_commit_status_to_github():
+    assert commit_status_from_github_status("pending") is CommitStatusEnum.PENDING
+    assert commit_status_from_github_status("error") is CommitStatusEnum.FAILED
+    assert commit_status_from_github_status("failure") is CommitStatusEnum.FAILED
+    assert commit_status_from_github_status("success") is CommitStatusEnum.SUCCESS
+
+    with pytest.raises(ManygitException):
+        commit_status_from_github_status("foo")
+
+
+def test_commit_status_from_github():
+    assert commit_status_to_github_status(CommitStatusEnum.PENDING) == "pending"
+    assert commit_status_to_github_status(CommitStatusEnum.FAILED) == "failure"
+    assert commit_status_to_github_status(CommitStatusEnum.SUCCESS) == "success"

@@ -1,5 +1,6 @@
 import typing as T
 from dataclasses import dataclass
+from urllib.parse import urlsplit
 
 from gitlab.client import Gitlab
 from gitlab.v4.objects import (
@@ -12,6 +13,9 @@ from gitlab.v4.objects import (
     ProjectTag,
 )
 
+from manygit.utils import parse_common_repo_formats
+
+from .connections import connection
 from .exceptions import ManygitException, UnsupportedException
 from .types import (
     Branch,
@@ -23,7 +27,6 @@ from .types import (
     Release,
     Repository,
     Tag,
-    connection,
 )
 
 GITLAB_HOST = "GITLAB"
@@ -335,13 +338,10 @@ GitLabAuth = T.Union[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth]
     host=GITLAB_HOST, auth_classes=[GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth]
 )
 class GitLabConnection(Connection):
-    __slots__ = []
+    __slots__ = ["conn", "enterprise_url"]
 
     conn: Gitlab
     enterprise_url: T.Optional[str]
-
-    auth_type = GitLabAuth
-    host = GITLAB_HOST
 
     def __init__(self, auth: GitLabAuth):
         if isinstance(auth, GitLabPersonalAccessTokenAuth):
@@ -351,7 +351,7 @@ class GitLabConnection(Connection):
 
         if auth.enterprise_url:
             self.conn = Gitlab(url=auth.enterprise_url, **args)
-            self.enterprise_url = auth.enterprise_url
+            self.enterprise_url = urlsplit(auth.enterprise_url).netloc
         else:
             self.conn = Gitlab(**args)
             self.enterprise_url = None
@@ -360,32 +360,9 @@ class GitLabConnection(Connection):
         return GitLabRepository(self.conn.projects.get(repo))
 
     def is_eligible_repo(self, repo: str) -> T.Tuple[bool, T.Optional[str]]:
-        # GitLab URL patterns
-        # https://gitlab.com/davidmreed/amaxa
-        # git@gitlab.com:davidmreed/amaxa.git
-        # TODO: GitLab Enterprise
-        repo = repo.removeprefix("https://")
-        repo = repo.removeprefix("ssh://")
-        repo = repo.removesuffix(".git")
-
-        # TODO: need to normalize enterprise_url to remove scheme
         if self.enterprise_url:
-            enterprise_ssh_prefix = f"git@{self.enterprise_url}:"
-            if repo.startswith(enterprise_ssh_prefix):
-                return True, repo.removeprefix(enterprise_ssh_prefix)
+            domain = self.enterprise_url
+        else:
+            domain = "gitlab.com"
 
-            # TODO: trailing slashes
-            if repo.startswith(self.enterprise_url):
-                return True, repo.removeprefix(self.enterprise_url)
-
-        if repo.startswith("git@gitlab.com:"):
-            return True, repo.removeprefix("git@gitlab.com:")
-
-        if repo.startswith("gitlab.com/"):
-            return True, repo.removeprefix("gitlab.com/")
-
-        splits = repo.split("/")
-        if len(splits) == 2:
-            return True, repo
-
-        return False, None
+        return parse_common_repo_formats(repo, domain)

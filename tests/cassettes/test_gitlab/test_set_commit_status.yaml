@@ -1,0 +1,847 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/davidmreed%2Fmanygit-test
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae1305bf9eefe-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:22 GMT
+      Etag:
+      - W/"44726d24d4466cd3fb3158821399fdca"
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-14-lb-gprd
+      GitLab-SV:
+      - localhost
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '39'
+      RateLimit-Remaining:
+      - '1961'
+      RateLimit-Reset:
+      - '1653110662'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:22 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=Q3zq7dJ2rJv7s8Qm3J4SeoslRAjw09Sr1vrOwXYGeBebDtGrQVrboZdVXagFqoHlmLuertIxrTlcTg5%2F%2BR%2BYkA3fxPikWtjYR%2FJq%2FOiEiGjJOtz7uJdYaHDujTQ%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - 01G3JH3YKMZF310BKJEC8V5331
+      X-Runtime:
+      - '0.104066'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"branch": "foo", "ref": "b0a6a46bcd70bf305d59ea86431affc1db6c27ac"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '68'
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: POST
+    uri: https://gitlab.com/api/v4/projects/36039781/repository/branches
+  response:
+    body:
+      string: '{"name":"foo","commit":{"id":"b0a6a46bcd70bf305d59ea86431affc1db6c27ac","short_id":"b0a6a46b","created_at":"2022-05-10T13:33:32.000+00:00","parent_ids":["510d6cf609c0abf0d5d89f5f8ab196b13b3cc404"],"title":"Add
+        LICENSE","message":"Add LICENSE","author_name":"David Reed","author_email":"david@ktema.org","authored_date":"2022-05-10T13:33:32.000+00:00","committer_name":"David
+        Reed","committer_email":"david@ktema.org","committed_date":"2022-05-10T13:33:32.000+00:00","trailers":{},"web_url":"https://gitlab.com/davidmreed/manygit-test/-/commit/b0a6a46bcd70bf305d59ea86431affc1db6c27ac"},"merged":false,"protected":false,"developers_can_push":false,"developers_can_merge":false,"can_push":true,"default":false,"web_url":"https://gitlab.com/davidmreed/manygit-test/-/tree/foo"}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae131dca2eefe-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '774'
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:22 GMT
+      Etag:
+      - W/"b5318bfa42c9bffbe30e5422e30e5a4e"
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-08-lb-gprd
+      GitLab-SV:
+      - localhost
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '39'
+      RateLimit-Remaining:
+      - '1961'
+      RateLimit-Reset:
+      - '1653110662'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:22 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=Jy00THGTNmNHP8MT7eyF3%2BZrF%2F%2BYfK228vShV4chCJ2j8mB3Nj4%2FfX3qlmh7%2BW%2F3rOqcXfXCogA33qNz3ciPulfmOrWxVtrwaaniQS%2FR8i4Ly5gSNFW28xJN6ac%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - 01G3JH3YV6X4J2MFC8DMY5Z304
+      X-Runtime:
+      - '0.305257'
+    status:
+      code: 201
+      message: Created
+- request:
+    body: '{"branch": "bar", "ref": "41d680e26e1a9dbe662c936716076cee72941215"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '68'
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: POST
+    uri: https://gitlab.com/api/v4/projects/36039781/repository/branches
+  response:
+    body:
+      string: '{"name":"bar","commit":{"id":"41d680e26e1a9dbe662c936716076cee72941215","short_id":"41d680e2","created_at":"2022-05-12T01:21:32.000+00:00","parent_ids":["b0a6a46bcd70bf305d59ea86431affc1db6c27ac"],"title":"Add
+        new file","message":"Add new file","author_name":"David Reed","author_email":"david@ktema.org","authored_date":"2022-05-12T01:21:32.000+00:00","committer_name":"David
+        Reed","committer_email":"david@ktema.org","committed_date":"2022-05-12T01:21:32.000+00:00","trailers":{},"web_url":"https://gitlab.com/davidmreed/manygit-test/-/commit/41d680e26e1a9dbe662c936716076cee72941215"},"merged":false,"protected":false,"developers_can_push":false,"developers_can_merge":false,"can_push":true,"default":false,"web_url":"https://gitlab.com/davidmreed/manygit-test/-/tree/bar"}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae134addbeefe-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '776'
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:23 GMT
+      Etag:
+      - W/"21d20f69d2bf2994191cfb5104ea4447"
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-01-lb-gprd
+      GitLab-SV:
+      - localhost
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '40'
+      RateLimit-Remaining:
+      - '1960'
+      RateLimit-Reset:
+      - '1653110663'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:23 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=gnbchKI6YfSBeNbFWEeAYZnsFufWryK0PoY2UYqVSeDdm7xKI%2BIqPzFKQ9KvnwgqJogouLNIRoDq7iO2BRcHscdoVkSGKgkthjmtk4g33Yd2bqnw1x37ClQOrEk%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - 01G3JH3Z8Z0XVRQM8YDP73MQ0X
+      X-Runtime:
+      - '0.302561'
+    status:
+      code: 201
+      message: Created
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/36039781/repository/branches/foo
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5ySQY/TQAyF/8rKV9LGSZpsOycQ7AEJcQBuCEWesSeNyDTRjLMIVf3vKF1oQbBS
+        xdXf83t6lo9woCBgwI8jZODGEHoFc4SewYBFamjTWMf3aH2FNdc7oW2zqQry3hVsG1fek4MM0n6M
+        2v6xtfhFIRVuScFAiWW5wnpV4KeiMlVlqnKNiC8QDSJkMFGUw+KRwHyGukBunG9w55CsR655u/O1
+        35Itdo0tKls5t8ENfMlAex2WEq+Y7969ff3w/uMDZBAkJer+ntOs+zG2P4u/ocee7z6I8BVJoH4A
+        A7ywl19VAq3H2F0Ewi2Tyg2dng6q8u+4K30+8Zfm5kiN1A8SE5jjKYNvYts5LtZ71SmZPO96Hciu
+        3Rjyc1qIIpwHOnzvel2pJM1X+VNqfvMDnJZzx04YjKchSQZTHFWc/jZheZRhnCSm1tGhnea0f46d
+        vS7wqtY4n8We5kEv/D87ahTJl78//QAAAP//AwBtEv+rBgMAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae1375eb8eefe-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:23 GMT
+      Etag:
+      - W/"b5318bfa42c9bffbe30e5422e30e5a4e"
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-22-lb-gprd
+      GitLab-SV:
+      - localhost
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '41'
+      RateLimit-Remaining:
+      - '1959'
+      RateLimit-Reset:
+      - '1653110663'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:23 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=qNFtNfAYNNw465kLlWEL8PZp3Ab5kXbY1l2lzpkPSYSNqSGCkLFMxxrjJoVZhulahTmz53S4b7wZZg%2FEDfHh5bPmKn9r0kkUViRi%2FEWKbmxRXgYC6%2BUdiFeuk%2BU%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - 01G3JH3ZPW8ZSJ570RS3KXFT4D
+      X-Runtime:
+      - '0.090548'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/36039781/repository/branches/bar
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5yS0WrbQBBFf8XMa2Vrd22v4n1qoV9Q+haKGO2M5CVaSeyOEorxvwc5rd1CAiav
+        c+7cyx3mBANGBgcNJijAjzEGAXeCQOBgp8k+KDaWNR6oYWuNP2xtpa2qrGeuzGGnjd5DAfk4Jqn/
+        21r8EqMw1SjgwChj1mq/1uan0s5otzUbpdQXpZxSUMCEiYfFI4N7hEahxZ1tPFWqabdqT/sD44Pd
+        bTW2rdfUWG8q9PCrAAnSLyW+Ea0Gflm1oWcoIHLO2L0DcJbjmOo/1b/jc6DVD2a6IY4YenBAC/v6
+        JBxxM6buKmCqCYXvaPV2UuH3427048S/mrsjJWHoOWVwp3MBL9zUc1qsjyJTdmXZBemx2fgxlpe0
+        mJipjDj87oKshbOU6/Ittbz7Bc7LvVPHBK7FPnMBUxqFvfwzIX7mfpw45drjUE9zPn7ELl5XeFNL
+        mi/iFudervyTHSUxl8vnn18BAAD//wMA/O5/lAgDAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae138cf31eefe-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:23 GMT
+      Etag:
+      - W/"21d20f69d2bf2994191cfb5104ea4447"
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-25-lb-gprd
+      GitLab-SV:
+      - localhost
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '42'
+      RateLimit-Remaining:
+      - '1958'
+      RateLimit-Reset:
+      - '1653110663'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:23 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=d75v69a%2Fjm2bgcn8XwBlSUvGZuNrlsj7GHWNw8A1PcsHptSv62f1Fg1ImRnKppaUk4kc6NSnaj0DHWys1hlOkxfSPZBoUO8zIAFUeZNIqxZEfRwVxPeT6bRfmRA%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - 01G3JH3ZY37TTB5ENR1KNP1TFK
+      X-Runtime:
+      - '0.078223'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"branch": "foo", "commit_message": "manygit test", "actions": [{"action":
+      "create", "file_path": "foo.txt", "content": "testing"}]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '132'
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: POST
+    uri: https://gitlab.com/api/v4/projects/36039781/repository/commits
+  response:
+    body:
+      string: '{"id":"2396df27ccc28ccf4e43beb72e38a428f5ee861d","short_id":"2396df27","created_at":"2022-05-21T05:23:24.000+00:00","parent_ids":["b0a6a46bcd70bf305d59ea86431affc1db6c27ac"],"title":"manygit
+        test","message":"manygit test","author_name":"David Reed","author_email":"david@ktema.org","authored_date":"2022-05-21T05:23:24.000+00:00","committer_name":"David
+        Reed","committer_email":"david@ktema.org","committed_date":"2022-05-21T05:23:24.000+00:00","trailers":{},"web_url":"https://gitlab.com/davidmreed/manygit-test/-/commit/2396df27ccc28ccf4e43beb72e38a428f5ee861d","stats":{"additions":1,"deletions":0,"total":1},"status":null,"project_id":36039781,"last_pipeline":null}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae13a3faceefe-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '669'
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:24 GMT
+      Etag:
+      - W/"111d2f5cbe91863574f5a146e8d770af"
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-26-lb-gprd
+      GitLab-SV:
+      - localhost
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '43'
+      RateLimit-Remaining:
+      - '1957'
+      RateLimit-Reset:
+      - '1653110664'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:24 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=uj3mT96w9tz8LQsKW9jQJB3DrNNmv%2Fo3XsEcODaqMrLPd7Wo%2F1WSEcMn0JrsnHswmAiXaSWVlXm8LT93CkZuGt26XFewxRJNE%2BXa5BGv5S2EGGBb48CWN%2FreXPo%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - 01G3JH404T3VS9XTZ09TJE66BD
+      X-Runtime:
+      - '0.482103'
+    status:
+      code: 201
+      message: Created
+- request:
+    body: '{"name": "Manygit Test", "description": "Description", "target_url": "https://github.com/davidmreed/manygit",
+      "state": "success"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '129'
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: POST
+    uri: https://gitlab.com/api/v4/projects/36039781/statuses/2396df27ccc28ccf4e43beb72e38a428f5ee861d
+  response:
+    body:
+      string: '{"id":2488225873,"sha":"2396df27ccc28ccf4e43beb72e38a428f5ee861d","ref":"foo","status":"success","name":"Manygit
+        Test","target_url":"https://github.com/davidmreed/manygit","description":"Description","created_at":"2022-05-21T05:23:24.726Z","started_at":null,"finished_at":"2022-05-21T05:23:24.715Z","allow_failure":false,"coverage":null,"author":{"id":3069669,"username":"davidmreed","name":"David
+        Reed","state":"active","avatar_url":"https://gitlab.com/uploads/-/system/user/avatar/3069669/avatar.png","web_url":"https://gitlab.com/davidmreed"}}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae13e08caeefe-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '546'
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:24 GMT
+      Etag:
+      - W/"adcc5555fd402d9fa0d1aca3402b11ae"
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-13-lb-gprd
+      GitLab-SV:
+      - localhost
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '44'
+      RateLimit-Remaining:
+      - '1956'
+      RateLimit-Reset:
+      - '1653110664'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:24 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=fTKZg6mCkgI0rxwT6kKqaiCg1nRVMmjLjHq%2B2q2KEbdBZqYEY0rrYxg8Y1JL9Dl%2B0aXGHz81hHVWQ8l%2FlJZrdUug3MS1V5tvK6w86MuC%2Fn1nLBT5MbTSqQxg3xU%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - 01G3JH40QZ8Z460X388J2Y9474
+      X-Runtime:
+      - '0.241122'
+    status:
+      code: 201
+      message: Created
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/36039781/repository/commits/2396df27ccc28ccf4e43beb72e38a428f5ee861d/statuses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3yQS2vDMBCE/0qZsxIl8iOOzrn2UnpqKWEjrW2BbAc9UkLJfy/GKS2U9rjDzuzs
+        9/oBZ6FV2TRKVc2uEIg9QUMV+9q2ameMUY0xbcllceLTTnHRUKmatmJu6q2FQOAWGu00QSAmSjlC
+        I2ZjOEYIjDQwNB5pvHYuPTxzTBBIFDpOxxw8NPqUzlFL2bnU59PaTIO0dHF2CMxWDosTApajCe6c
+        3DRC4/BjEjCBKbE9Uprbb5RabaqV2j5vKq0Krcr1TtUvS8PwtTdm7wVaN7rY/2vdVrOVvJ/ejy05
+        nwNDt+QjC5jpwoE6/oqjnPopQC9ki029r+u9QI4c7ii+f/vGc5i1h6dFmynOIpnkLjxfvlCi8JuW
+        p4VWPvuJbJQrGa8x8SDna3JxyXuF+7g+jx0E3vn0d9yPgrfb2ycAAAD//wMAuRdoPCQCAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae14069cbeefe-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:25 GMT
+      Etag:
+      - W/"6e3fd14e54098876a79463b95c98b225"
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-16-lb-gprd
+      GitLab-SV:
+      - localhost
+      Link:
+      - <https://gitlab.com/api/v4/projects/36039781/repository/commits/2396df27ccc28ccf4e43beb72e38a428f5ee861d/statuses?id=36039781&page=1&per_page=20&sha=2396df27ccc28ccf4e43beb72e38a428f5ee861d>;
+        rel="first", <https://gitlab.com/api/v4/projects/36039781/repository/commits/2396df27ccc28ccf4e43beb72e38a428f5ee861d/statuses?id=36039781&page=1&per_page=20&sha=2396df27ccc28ccf4e43beb72e38a428f5ee861d>;
+        rel="last"
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '45'
+      RateLimit-Remaining:
+      - '1955'
+      RateLimit-Reset:
+      - '1653110664'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:24 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=WZ3BlQ5%2BpBJQaSIXahZjj8xZZ9Pk2xz1rCnvp5TDBnC8hxPJ6RDJRYqdd2fGp6DwphvkOxZNw8to0kd5cwJ2Itun9ya8J4Ebqi1UHKOas%2B4wrYNv2IWZp3h9jGw%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Next-Page:
+      - ''
+      X-Page:
+      - '1'
+      X-Per-Page:
+      - '20'
+      X-Prev-Page:
+      - ''
+      X-Request-Id:
+      - 01G3JH413N2D2AD3YDX8C5S18B
+      X-Runtime:
+      - '0.072048'
+      X-Total:
+      - '1'
+      X-Total-Pages:
+      - '1'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: DELETE
+    uri: https://gitlab.com/api/v4/projects/36039781/repository/branches/foo
+  response:
+    body:
+      string: ''
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae141aa44eefe-MIA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:25 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-24-lb-gprd
+      GitLab-SV:
+      - localhost
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '46'
+      RateLimit-Remaining:
+      - '1954'
+      RateLimit-Reset:
+      - '1653110665'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:25 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=EojV4hBYnHFWjbni%2BV2J2y%2FlL8N2RcDvMq0HNCKxOyp7x2jIxAYoLb2gbhiQI071pn5cbkJiBCcazznZyNWpqytfWFTHowLApKOKtIKSPw39nuGNpjOlwi3sXHk%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - 01G3JH41A3VCTSAX1H0JA5YHER
+      X-Runtime:
+      - '0.298713'
+    status:
+      code: 204
+      message: No Content
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-type:
+      - application/json
+      PRIVATE-TOKEN:
+      - glpat-eUYF-nSm5ipTs6kssWVs
+      User-Agent:
+      - python-gitlab/3.4.0
+    method: DELETE
+    uri: https://gitlab.com/api/v4/projects/36039781/repository/branches/bar
+  response:
+    body:
+      string: ''
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 70eae1446b69eefe-MIA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 21 May 2022 05:23:25 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-04-lb-gprd
+      GitLab-SV:
+      - localhost
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '46'
+      RateLimit-Remaining:
+      - '1954'
+      RateLimit-Reset:
+      - '1653110665'
+      RateLimit-ResetTime:
+      - Sat, 21 May 2022 05:24:25 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=LF%2FvoEIbgJnKs9bJeGuB9el5YgBk7Es0%2Fa1tyzAgsUQc6SJsDhIiPHG50QIqqK38cKwCF4rfx7P%2FKc%2Fs0xLPPjTyWJPa3Oc%2B8KSv%2BMYBVhSJPiUP%2FLmTgkqt7ps%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - 01G3JH41QSDVZ29VJC28JRMPFD
+      X-Runtime:
+      - '0.265250'
+    status:
+      code: 204
+      message: No Content
+version: 1

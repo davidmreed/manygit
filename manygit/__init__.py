@@ -1,9 +1,22 @@
 try:
-    import manygit.gitlab  # noqa
+    from manygit.gitlab import GitLabOAuthTokenAuth, GitLabPersonalAccessTokenAuth
 except ImportError:
     pass
 
 try:
-    import manygit.github
+    from manygit.github import GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth
 except ImportError:
     pass
+
+from .connections import ConnectionManager
+from .types import (
+    Branch,
+    Commit,
+    CommitStatus,
+    CommitStatusEnum,
+    Connection,
+    PullRequest,
+    Release,
+    Repository,
+    Tag,
+)

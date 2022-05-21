@@ -2,6 +2,9 @@ black
 isort
 flake8
 pytest
+pytest-cov
 pre-commit
 pip-tools
 pyright
+vcrpy
+pytest-recording

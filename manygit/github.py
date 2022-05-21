@@ -1,5 +1,6 @@
 import typing as T
 from dataclasses import dataclass
+from urllib.parse import urlsplit
 
 import github3
 from github3.exceptions import GitHubException, TransportError
@@ -14,6 +15,9 @@ from github3.repos.repo import Repository as Github3Repository
 from github3.repos.status import Status as Github3Status
 from github3.repos.tag import RepoTag as Github3RepoTag
 
+from manygit.utils import parse_common_repo_formats
+
+from .connections import connection
 from .exceptions import (
     ManygitException,
     NetworkError,
@@ -31,7 +35,6 @@ from .types import (
     Release,
     Repository,
     Tag,
-    connection,
 )
 
 GITHUB_HOST = "GITHUB"
@@ -96,8 +99,8 @@ def commit_status_to_github_status(status: CommitStatusEnum) -> str:
         return "pending"
     elif status == CommitStatusEnum.FAILED:
         return "failure"
-
-    return "success"
+    elif status == CommitStatusEnum.SUCCESS:
+        return "success"
 
 
 GitHub3Commit = T.Union[Github3ShortCommit, Github3RepoCommit]
@@ -425,9 +428,7 @@ class GitHubConnection(Connection):
 
         if auth.enterprise_url:
             self.conn = github3.github.GitHubEnterprise(auth.enterprise_url, **args)
-            self.enterprise_url = auth.enterprise_url.removeprefix(
-                "https://"
-            ).removesuffix("/")
+            self.enterprise_url = urlsplit(auth.enterprise_url).netloc
         else:
             self.conn = github3.github.GitHub(**args)
             self.enterprise_url = None
@@ -440,32 +441,9 @@ class GitHubConnection(Connection):
         return GitHubRepository(repository)
 
     def is_eligible_repo(self, repo: str) -> T.Tuple[bool, T.Optional[str]]:
-        # GitHub URL patterns
-        # GitHub Enterprise URLs are the same, but replace `github.com` with the enterprise URL
-        # https://github.com/davidmreed/amaxa.git
-        # https://github.com/davidmreed/amaxa
-        # git@github.com:davidmreed/amaxa.git
-        # davidmreed/amaxa
-
-        repo = repo.removeprefix("https://")
-        repo = repo.removeprefix("ssh://")
-        repo = repo.removesuffix(".git")
-
         if self.enterprise_url:
             domain = self.enterprise_url
         else:
             domain = "github.com"
 
-        ssh_prefix = f"git@{domain}:"
-
-        if repo.startswith(domain):
-            return True, repo.removeprefix(domain).removeprefix("/")
-
-        if repo.startswith(ssh_prefix):
-            return True, repo.removeprefix(ssh_prefix)
-
-        splits = repo.split("/")
-        if len(splits) == 2:
-            return True, repo
-
-        return False, None
+        return parse_common_repo_formats(repo, domain)

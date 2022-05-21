@@ -5,3 +5,6 @@ deps:
 
 dev-install: deps
 	pip-sync requirements/*.txt
+
+test:
+    pytest --cov=manygit tests --cov-report xml:cov.xml --block-network

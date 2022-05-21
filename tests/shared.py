@@ -1,6 +1,9 @@
+import pytest
+
 from manygit.types import CommitStatusEnum, Repository
 
 
+@pytest.mark.vcr
 def test_branches(repo: Repository, branch_commit: str):
     assert set(branch.name for branch in repo.branches) == set(
         ["main", "feature/add-file"]
@@ -12,12 +15,14 @@ def test_branches(repo: Repository, branch_commit: str):
     assert repo.default_branch.name == "main"
 
 
+@pytest.mark.vcr
 def test_commits(repo: Repository, branch_commit: str, main_commit: str):
     commit = repo.get_commit(branch_commit)
     assert commit.sha == branch_commit
     assert list(parent.sha for parent in commit.parents) == [main_commit]
 
 
+@pytest.mark.vcr
 def test_commit_statuses(repo: Repository, main_commit: str):
     commit = repo.get_commit(main_commit)
     assert set(status.name for status in commit.statuses) == set(["foo", "bar"])
@@ -35,6 +40,7 @@ def test_commit_statuses(repo: Repository, main_commit: str):
             assert cs.url == "https://ktema.org"
 
 
+@pytest.mark.vcr
 def test_tags(repo: Repository, main_commit: str):
     assert len(list(repo.tags)) == 1
     tag = repo.get_tag("test")
@@ -44,6 +50,7 @@ def test_tags(repo: Repository, main_commit: str):
     assert tag.annotation.strip() == "This is the tag message."
 
 
+@pytest.mark.vcr
 def test_releases(repo: Repository, main_commit: str):
     assert len(list(repo.releases)) == 1
     release = next(repo.releases)
@@ -54,6 +61,7 @@ def test_releases(repo: Repository, main_commit: str):
     assert release.commit.sha == main_commit
 
 
+@pytest.mark.vcr
 def test_pull_requests(repo: Repository):
     assert len(list(repo.pull_requests)) == 1
     pull_request = next(repo.pull_requests)

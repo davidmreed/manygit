@@ -1,0 +1,919 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.github.v3.full+json
+      Accept-Charset:
+      - utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - github3.py/3.2.0
+    method: GET
+    uri: https://api.github.com/repos/davidmreed/manygit-test
+  response:
+    body:
+      string: !!binary |
+        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
+        PP0HoOnMd5QVAAA=
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 21 May 2022 05:22:30 GMT
+      ETag:
+      - W/"c4818ad3edc95213d4dd4d6c9d697ec465c08d5c32747cac33c97b9a674d858e"
+      Last-Modified:
+      - Mon, 16 May 2022 18:46:33 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=full; format=json
+      X-GitHub-Request-Id:
+      - B7F8:5938:112136B:1CDE7E4:62887716
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4961'
+      X-RateLimit-Reset:
+      - '1653114142'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '39'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-05-30 21:00:39 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.github.loki-preview+json
+      Accept-Charset:
+      - utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - github3.py/3.2.0
+    method: GET
+    uri: https://api.github.com/repos/davidmreed/manygit-test/branches/main
+  response:
+    body:
+      string: !!binary |
+        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
+        AA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 21 May 2022 05:22:30 GMT
+      ETag:
+      - W/"b4d96d53496533002d6c11836a7cac52777d945794d1921c9fbe6560024b9f66"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=loki-preview; format=json
+      X-GitHub-Request-Id:
+      - B7F8:5938:1121378:1CDE806:62887716
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4960'
+      X-RateLimit-Reset:
+      - '1653114142'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '40'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-05-30 21:00:39 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.github.v3.full+json
+      Accept-Charset:
+      - utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - github3.py/3.2.0
+    method: GET
+    uri: https://api.github.com/repos/davidmreed/manygit-test/commits/0ab718932f224846be22c284cd4fd8f667b35c7b
+  response:
+    body:
+      string: !!binary |
+        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
+        uxYAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 21 May 2022 05:22:30 GMT
+      ETag:
+      - W/"b5c0710ded4ba37b0177c7bed17652bf8043785189d2edcaacd0094ced6ac935"
+      Last-Modified:
+      - Thu, 12 May 2022 04:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=full; format=json
+      X-GitHub-Request-Id:
+      - B7F8:5938:1121386:1CDE81E:62887716
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4959'
+      X-RateLimit-Reset:
+      - '1653114142'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '41'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-05-30 21:00:39 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"tag": "foo", "message": "This is a test tag", "object": "0ab718932f224846be22c284cd4fd8f667b35c7b",
+      "type": "commit", "tagger": {"name": "manygit", "email": "manygit@example.com"}}'
+    headers:
+      Accept:
+      - application/vnd.github.v3.full+json
+      Accept-Charset:
+      - utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '182'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - github3.py/3.2.0
+    method: POST
+    uri: https://api.github.com/repos/davidmreed/manygit-test/git/tags
+  response:
+    body:
+      string: '{"node_id":"TA_kwDOHUmu4doAKDI3ZTY3NWU1OTJmMTU1Yjk4OTZjNjkyZjk2YmI3YWJmMTNhOWZiYjg","sha":"27e675e592f155b9896c692f96bb7abf13a9fbb8","url":"https://api.github.com/repos/davidmreed/manygit-test/git/tags/27e675e592f155b9896c692f96bb7abf13a9fbb8","tagger":{"name":"manygit","email":"manygit@example.com","date":"2022-05-21T05:22:30Z"},"object":{"sha":"0ab718932f224846be22c284cd4fd8f667b35c7b","type":"commit","url":"https://api.github.com/repos/davidmreed/manygit-test/git/commits/0ab718932f224846be22c284cd4fd8f667b35c7b"},"tag":"foo","message":"This
+        is a test tag","verification":{"verified":false,"reason":"unsigned","signature":null,"payload":null}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Length:
+      - '651'
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 21 May 2022 05:22:30 GMT
+      ETag:
+      - '"079ffd1f5177b04b2dd79b55602b1b21f59afb37b6440e64806224242da5b0cd"'
+      Location:
+      - https://api.github.com/repos/davidmreed/manygit-test/git/tags/27e675e592f155b9896c692f96bb7abf13a9fbb8
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=full; format=json
+      X-GitHub-Request-Id:
+      - B7F8:5938:112139D:1CDE837:62887716
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4958'
+      X-RateLimit-Reset:
+      - '1653114142'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '42'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-05-30 21:00:39 UTC
+    status:
+      code: 201
+      message: Created
+- request:
+    body: '{"ref": "refs/tags/foo", "sha": "27e675e592f155b9896c692f96bb7abf13a9fbb8"}'
+    headers:
+      Accept:
+      - application/vnd.github.v3.full+json
+      Accept-Charset:
+      - utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '75'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - github3.py/3.2.0
+    method: POST
+    uri: https://api.github.com/repos/davidmreed/manygit-test/git/refs
+  response:
+    body:
+      string: '{"ref":"refs/tags/foo","node_id":"REF_kwDOHUmu4a1yZWZzL3RhZ3MvZm9v","url":"https://api.github.com/repos/davidmreed/manygit-test/git/refs/tags/foo","object":{"sha":"27e675e592f155b9896c692f96bb7abf13a9fbb8","type":"tag","url":"https://api.github.com/repos/davidmreed/manygit-test/git/tags/27e675e592f155b9896c692f96bb7abf13a9fbb8"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Length:
+      - '331'
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 21 May 2022 05:22:31 GMT
+      ETag:
+      - '"c13eb82401db2ab3133072b634db631f5165233cda14b3b324ac4da661ed2f35"'
+      Location:
+      - https://api.github.com/repos/davidmreed/manygit-test/git/refs/tags/foo
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=full; format=json
+      X-GitHub-Request-Id:
+      - B7F8:5938:11213A7:1CDE84D:62887716
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4957'
+      X-RateLimit-Reset:
+      - '1653114142'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '43'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-05-30 21:00:39 UTC
+    status:
+      code: 201
+      message: Created
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.github.v3.full+json
+      Accept-Charset:
+      - utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - github3.py/3.2.0
+    method: GET
+    uri: https://api.github.com/repos/davidmreed/manygit-test/commits/0ab718932f224846be22c284cd4fd8f667b35c7b
+  response:
+    body:
+      string: !!binary |
+        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
+        uxYAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 21 May 2022 05:22:31 GMT
+      ETag:
+      - W/"b5c0710ded4ba37b0177c7bed17652bf8043785189d2edcaacd0094ced6ac935"
+      Last-Modified:
+      - Thu, 12 May 2022 04:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=full; format=json
+      X-GitHub-Request-Id:
+      - B7F8:5938:11213B7:1CDE86B:62887717
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4956'
+      X-RateLimit-Reset:
+      - '1653114142'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '44'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-05-30 21:00:39 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.github.loki-preview+json
+      Accept-Charset:
+      - utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - github3.py/3.2.0
+    method: GET
+    uri: https://api.github.com/repos/davidmreed/manygit-test/branches/main
+  response:
+    body:
+      string: !!binary |
+        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
+        AA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 21 May 2022 05:22:31 GMT
+      ETag:
+      - W/"b4d96d53496533002d6c11836a7cac52777d945794d1921c9fbe6560024b9f66"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=loki-preview; format=json
+      X-GitHub-Request-Id:
+      - B7F8:5938:11213CA:1CDE881:62887717
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4955'
+      X-RateLimit-Reset:
+      - '1653114142'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '45'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-05-30 21:00:39 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.github.v3.full+json
+      Accept-Charset:
+      - utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - github3.py/3.2.0
+    method: GET
+    uri: https://api.github.com/repos/davidmreed/manygit-test/commits/0ab718932f224846be22c284cd4fd8f667b35c7b
+  response:
+    body:
+      string: !!binary |
+        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
+        uxYAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 21 May 2022 05:22:31 GMT
+      ETag:
+      - W/"b5c0710ded4ba37b0177c7bed17652bf8043785189d2edcaacd0094ced6ac935"
+      Last-Modified:
+      - Thu, 12 May 2022 04:51:47 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=full; format=json
+      X-GitHub-Request-Id:
+      - B7F8:5938:11213D4:1CDE892:62887717
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4954'
+      X-RateLimit-Reset:
+      - '1653114142'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '46'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-05-30 21:00:39 UTC
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.github.v3.full+json
+      Accept-Charset:
+      - utf-8
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - github3.py/3.2.0
+    method: DELETE
+    uri: https://api.github.com/repos/davidmreed/manygit-test/git/refs/tags/foo
+  response:
+    body:
+      string: ''
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Content-Security-Policy:
+      - default-src 'none'
+      Date:
+      - Sat, 21 May 2022 05:22:31 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=full; format=json
+      X-GitHub-Request-Id:
+      - B7F8:5938:11213DD:1CDE8AF:62887717
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4953'
+      X-RateLimit-Reset:
+      - '1653114142'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '47'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-05-30 21:00:39 UTC
+    status:
+      code: 204
+      message: No Content
+version: 1
