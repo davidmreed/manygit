@@ -41,4 +41,4 @@ jobs:
           GITHUB_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
           GITHUB_USERNAME: ${{ secrets.USERNAME_GITHUB }}
         run: |
-          pytest
+          make test
