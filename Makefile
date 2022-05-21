@@ -8,3 +8,6 @@ dev-install: deps
 
 test:
 	pytest --cov=manygit tests --cov-report xml:cov.xml --block-network
+
+vcr:
+	pytest --record-mode=rewrite
