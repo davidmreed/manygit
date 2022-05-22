@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from urllib.parse import urlsplit
 
 from gitlab.client import Gitlab
+from gitlab.exceptions import GitlabGetError
 from gitlab.v4.objects import (
     Project,
     ProjectBranch,
@@ -16,7 +17,12 @@ from gitlab.v4.objects import (
 from manygit.utils import parse_common_repo_formats
 
 from .connections import connection
-from .exceptions import ManygitException, UnsupportedException
+from .exceptions import (
+    ManygitException,
+    NotFoundError,
+    UnsupportedException,
+    map_exceptions,
+)
 from .types import (
     Branch,
     Commit,
@@ -64,6 +70,11 @@ def commit_status_to_gitlab(status: CommitStatusEnum) -> str:
         return "success"
 
 
+exc = map_exceptions(
+    {lambda e: isinstance(e, GitlabGetError) and e.response_code == 404: NotFoundError}
+)
+
+
 class GitLabCommitStatus(CommitStatus):
     __slots__ = ["commit_status"]
 
@@ -102,6 +113,7 @@ class GitLabCommit(Commit):
         return self.commit.id
 
     @property
+    @exc
     def statuses(self) -> T.Iterator[CommitStatus]:
         for cs in self.commit.statuses.list(all=True, as_list=False):
             yield GitLabCommitStatus(T.cast(ProjectCommitStatus, cs))
@@ -114,6 +126,7 @@ class GitLabCommit(Commit):
         for c in self.commit.parent_ids:
             yield GitLabCommit(self.commit.manager.get(c))  # type: ignore
 
+    @exc
     def set_commit_status(
         self,
         state: CommitStatusEnum,
@@ -146,6 +159,7 @@ class GitLabBranch(Branch):
         return self.branch.name
 
     @property
+    @exc
     def head(self) -> GitLabCommit:
         return self.repo.get_commit(self.branch.commit["id"])
 
@@ -216,6 +230,7 @@ class GitLabPullRequest(PullRequest):
     def source(self) -> Branch:
         return self.repo.get_branch(self.pr.source_branch)
 
+    @exc
     def merge(self):
         self.pr.merge()
 
@@ -229,18 +244,22 @@ class GitLabRepository(Repository):
         self.repo = repo
 
     @property
+    @exc
     def commits(self) -> T.Iterator[GitLabCommit]:
         for c in self.repo.commits.list(all=True, as_list=False):
             yield GitLabCommit(T.cast(ProjectCommit, c))
 
+    @exc
     def get_commit(self, sha: str) -> GitLabCommit:
         return GitLabCommit(self.repo.commits.get(id=sha))
 
     @property
+    @exc
     def branches(self) -> T.Iterator[GitLabBranch]:
         for b in self.repo.branches.list(all=True, as_list=False):
             yield GitLabBranch(T.cast(ProjectBranch, b), self)
 
+    @exc
     def get_branch(self, name: str) -> GitLabBranch:
         return GitLabBranch(self.repo.branches.get(name), self)
 
@@ -249,22 +268,27 @@ class GitLabRepository(Repository):
         return self.get_branch(self.repo.default_branch)
 
     @property
+    @exc
     def tags(self) -> T.Iterator[GitLabTag]:
         for t in self.repo.tags.list(all=True, as_list=False):
             yield GitLabTag(T.cast(ProjectTag, t), self)
 
+    @exc
     def get_tag(self, name: str) -> GitLabTag:
         return GitLabTag(self.repo.tags.get(name), self)
 
     @property
+    @exc
     def releases(self) -> T.Iterator[GitLabRelease]:
         for r in self.repo.releases.list(all=True, as_list=False):
             yield GitLabRelease(T.cast(ProjectRelease, r), self)
 
+    @exc
     def get_release(self, name: str) -> GitLabRelease:
         return GitLabRelease(self.repo.releases.get(name), self)
 
     @property
+    @exc
     def pull_requests(self) -> T.Iterator[GitLabPullRequest]:
         for pr in self.repo.mergerequests.list(all=True, as_list=False, state="opened"):
             yield GitLabPullRequest(T.cast(ProjectMergeRequest, pr), self)
@@ -276,6 +300,7 @@ class GitLabRepository(Repository):
             "GitLab repos do not support branch merging via API."
         )
 
+    @exc
     def create_tag(
         self,
         tag_name: str,
@@ -287,6 +312,7 @@ class GitLabRepository(Repository):
         )
         return GitLabTag(T.cast(ProjectTag, tag), self)
 
+    @exc
     def create_release(
         self,
         tag: GitLabTag,
@@ -309,6 +335,7 @@ class GitLabRepository(Repository):
 
         return GitLabRelease(release, self)
 
+    @exc
     def create_pull_request(
         self,
         title: str,
@@ -356,6 +383,7 @@ class GitLabConnection(Connection):
             self.conn = Gitlab(**args)
             self.enterprise_url = None
 
+    @exc
     def get_repo(self, repo: str) -> GitLabRepository:
         return GitLabRepository(self.conn.projects.get(repo))
 

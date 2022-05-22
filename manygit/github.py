@@ -55,7 +55,13 @@ class GitHubPersonalAccessTokenAuth:
 
 GitHubAuth = T.Union[GitHubOAuthTokenAuth, GitHubPersonalAccessTokenAuth]
 
-exc = map_exceptions({TransportError: NetworkError, GitHubException: VCSException})
+exc = map_exceptions(
+    {
+        github3.exceptions.NotFoundError: NotFoundError,
+        TransportError: NetworkError,
+        GitHubException: VCSException,
+    }
+)
 
 
 class GitHubCommitStatus(CommitStatus):
@@ -276,7 +282,11 @@ class GitHubRepository(Repository):
 
     @exc
     def get_commit(self, sha: str) -> GitHubCommit:
-        commit = self.repo.commit(sha)
+        # GitHub inexplicably returns 422 rather than 404 when a commit is not found.
+        try:
+            commit = self.repo.commit(sha)
+        except github3.exceptions.UnprocessableEntity:
+            raise NotFoundError
         if not commit:
             raise NotFoundError
         return GitHubCommit(commit, self)
@@ -290,8 +300,8 @@ class GitHubRepository(Repository):
     @exc
     def get_branch(self, name: str) -> GitHubBranch:
         branch = self.repo.branch(name)
-        if not branch:
-            raise NotFoundError
+        if not branch:  # pragma: no cover
+            raise NotFoundError  # TODO: unclear that this is the right response for GitHub returning a null body.
 
         return GitHubBranch(branch, self)
 

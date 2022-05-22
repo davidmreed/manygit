@@ -208,6 +208,10 @@ def test_is_eligible_repo(fake_conn: GitHubConnection):
         "davidmreed/manygit",
     )
 
+    assert fake_conn.is_eligible_repo("davidmreed/manygit/blah") == (
+        False,
+        None,
+    )
     assert fake_conn.is_eligible_repo("git@gitlab.com:davidmreed/manygit.git") == (
         False,
         None,

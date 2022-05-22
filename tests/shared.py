@@ -1,5 +1,6 @@
 import pytest
 
+from manygit.exceptions import NotFoundError
 from manygit.types import CommitStatusEnum, Repository
 
 
@@ -14,12 +15,18 @@ def test_branches(repo: Repository, branch_commit: str):
     assert branch.head.sha == branch_commit
     assert repo.default_branch.name == "main"
 
+    with pytest.raises(NotFoundError):
+        repo.get_branch("snafu")
+
 
 @pytest.mark.vcr
 def test_commits(repo: Repository, branch_commit: str, main_commit: str):
     commit = repo.get_commit(branch_commit)
     assert commit.sha == branch_commit
     assert list(parent.sha for parent in commit.parents) == [main_commit]
+
+    with pytest.raises(NotFoundError):
+        repo.get_commit("snafu")
 
 
 @pytest.mark.vcr
@@ -49,16 +56,22 @@ def test_tags(repo: Repository, main_commit: str):
     assert tag.name == "test"
     assert tag.annotation.strip() == "This is the tag message."
 
+    with pytest.raises(NotFoundError):
+        repo.get_tag("snafu")
+
 
 @pytest.mark.vcr
 def test_releases(repo: Repository, main_commit: str):
     assert len(list(repo.releases)) == 1
-    release = next(repo.releases)
+    release = repo.get_release("test")
     assert release
     assert release.tag.name == "test"
     assert release.name == "test"
     assert release.body.strip() == "Here are the release notes."
     assert release.commit.sha == main_commit
+
+    with pytest.raises(NotFoundError):
+        repo.get_release("snafu")
 
 
 @pytest.mark.vcr
